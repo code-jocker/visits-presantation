@@ -5,6 +5,7 @@ import avatimage from '/src/assets/images/avartImage.avif'
 import EquipmentModal from '../../../components/modals/EquipmentModal'
 import AppointmentModal from '../../../components/modals/AppointmentModal'
 import { visitorApi, type RecentTap } from '../../../api/visitor'
+import { client } from '../../../api/clients'
 
 import { validatePhoneWithNumverify } from '../../../api/phoneVerification'
 import FaceVerify from '../../../components/camera/FaceVerify'
@@ -92,6 +93,7 @@ function ScanningPage() {
   // Keeping these states for future UX; ensure they are referenced below.
   const [isLoadingTaps, setIsLoadingTaps] = useState(false)
   const [tapsError, setTapsError] = useState<string | null>(null)
+  const [reportMessage, setReportMessage] = useState<string | null>(null)
 
 
 
@@ -334,6 +336,16 @@ useEffect(() => {
       await loadRecentTaps()
       setVisitorForm((prev) => ({ ...prev, badgeId: '', idNumber: '' }))
 
+      // Auto-generate report when threshold reached
+      try {
+        const reportRes = await client.post('/reports/auto')
+        if (reportRes.data && reportRes.data.data && reportRes.data.data.generated) {
+          setReportMessage('Report generated: ' + reportRes.data.data.reportCount + ' visitors')
+        }
+      } catch (e) {
+        // silently ignore report errors
+      }
+
       setHasAppointment(false)
       setAppointmentDetails(null)
       setSelectedMode('')
@@ -378,6 +390,12 @@ useEffect(() => {
         {tapsError && (
           <div className="mb-3 px-3 py-2 text-sm rounded bg-red-50 text-red-700 border border-red-100">
             {tapsError}
+          </div>
+        )}
+
+        {reportMessage && (
+          <div className="mb-3 px-3 py-2 text-sm rounded bg-green-50 text-green-700 border border-green-100">
+            {reportMessage}
           </div>
         )}
 

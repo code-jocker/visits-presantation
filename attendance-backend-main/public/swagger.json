@@ -1047,6 +1047,120 @@
 				"type": "object",
 				"additionalProperties": true
 			},
+			"AutoReportResponse": {
+				"properties": {
+					"generated": {
+						"type": "boolean"
+					},
+					"reason": {
+						"type": "string"
+					},
+					"downloadUrl": {
+						"type": "string"
+					},
+					"reportCount": {
+						"type": "number",
+						"format": "double"
+					},
+					"visitorCount": {
+						"type": "number",
+						"format": "double"
+					},
+					"threshold": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"generated"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"ServiceResponse_AutoReportResponse_": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					},
+					"result": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/AutoReportResponse"
+							}
+						],
+						"nullable": true
+					},
+					"statusCode": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"success",
+					"message",
+					"result",
+					"statusCode"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"ServiceResponse__files_58__name-string--size-number--createdAt-string_-Array__": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					},
+					"result": {
+						"properties": {
+							"files": {
+								"items": {
+									"properties": {
+										"createdAt": {
+											"type": "string"
+										},
+										"size": {
+											"type": "number",
+											"format": "double"
+										},
+										"name": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"createdAt",
+										"size",
+										"name"
+									],
+									"type": "object"
+								},
+								"type": "array"
+							}
+						},
+						"required": [
+							"files"
+						],
+						"type": "object",
+						"nullable": true
+					},
+					"statusCode": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"success",
+					"message",
+					"result",
+					"statusCode"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
 			"ServiceResponse_PermissionResponse-Array_": {
 				"properties": {
 					"success": {
@@ -4285,6 +4399,112 @@
 					{
 						"in": "path",
 						"name": "permissionId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/reports/auto": {
+			"post": {
+				"operationId": "AutoGenerateReport",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse_AutoReportResponse_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Reports"
+				],
+				"security": [
+					{
+						"jwt": [
+							"report:create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": false,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"department": {
+										"type": "string"
+									}
+								},
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/reports/list": {
+			"get": {
+				"operationId": "ListReports",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse__files_58__name-string--size-number--createdAt-string_-Array__"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Reports"
+				],
+				"security": [
+					{
+						"jwt": [
+							"report:list"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/api/reports/download/{filename}": {
+			"get": {
+				"operationId": "DownloadReport",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Reports"
+				],
+				"security": [
+					{
+						"jwt": [
+							"report:read"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "filename",
 						"required": true,
 						"schema": {
 							"type": "string"
