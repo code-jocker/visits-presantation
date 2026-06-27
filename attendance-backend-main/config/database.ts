@@ -35,6 +35,7 @@ if (databaseUrl) {
     dialectOptions: {
       ssl: {
         require: true,
+        rejectUnauthorized: false,
       },
     },
   });
