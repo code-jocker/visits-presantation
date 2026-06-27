@@ -1,69 +1,76 @@
 # Render deployment guide (E-visitors)
 
-This guide deploys the **backend** (`attendance-backend-main`) as a Node.js Web Service and the **frontend** (`E-visitors-main`) as a Web Service.
+This guide deploys the **backend** (`attendance-backend-main`) as a Node.js Web Service and the **frontend** (`E-visitors-main`) as a Static Site on Render.
 
 ## 1) Required database
-Use your provided Postgres connection string:
+Use the Render PostgreSQL connection string (set this as `DATABASE_URL` in the backend environment):
 
-- `DATABASE_URL=postgresql://evisitors_user:RK0uvG8ZSkHH551BH2GZ7YWqtE25q37l@dpg-d8h6vtddt1ts7383hlu0-a/evisitors`
+```
+postgresql://<DB_USER>:<DB_PASSWORD>@<DB_HOST>:<DB_PORT>/<DB_NAME>
+```
+
+The backend auto-detects PostgreSQL when `DATABASE_URL` is set (see `attendance-backend-main/config/database.ts`).
 
 ## 2) Backend (Render Web Service)
-Service: `attendance-backend-main`
+Repo root: `attendance-backend-main`
 
 ### Build command
-- `npm install`
-- `npm run build`
+```bash
+npm install && npm run build
+```
 
 ### Start command
-- `npm run start`
+```bash
+npm run start
+```
 
 ### Environment variables (Render -> Environment)
-Set at minimum:
-- `NODE_ENV=production`
-- `PORT=3000` (or whatever Render uses)
-- `DATABASE_URL=<your connection string above>`
+| Variable | Example / Notes |
+|---|---|
+| `NODE_ENV` | `production` |
+| `PORT` | Render provides this; default `3000` |
+| `DATABASE_URL` | Your Render Postgres connection string |
+| `JWT_SECRET` | Strong random secret (e.g. `openssl rand -base64 32`) |
+| `FRONTEND_URL` | `https://<your-frontend>.onrender.com` |
+| `COOKIE_DOMAIN` | `<your-frontend>.onrender.com` |
+| `GOOGLE_CLIENT_ID` | Optional |
+| `GOOGLE_CLIENT_SECRET` | Optional |
+| `GOOGLE_CALLBACK_URL` | Optional |
 
-Also required by app if used/initialized at runtime:
-- `JWT_SECRET=<set a strong random secret>`
-- `FRONTEND_URL=<your frontend render URL e.g. https://your-frontend.onrender.com>`
+**Note:** No MySQL vars (`DB_HOST`, `DB_USER`, etc.) are needed when `DATABASE_URL` is set.
 
-Optional (if you use them):
-- `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL`
-- `COOKIE_DOMAIN`
-
-### Notes
-- The backend CORS allowlist uses `FRONTEND_URL` plus existing defaults.
-- No need to set MySQL `DB_HOST/DB_USER/DB_PASSWORD/DB_NAME` when `DATABASE_URL` is provided.
-
-## 3) Frontend (Render Web Service)
-Service: `E-visitors-main`
+## 3) Frontend (Render Static Site)
+Repo root: `E-visitors-main`
 
 ### Build command
-- `npm install`
-- `npm run build`
+```bash
+npm install && npm run build
+```
 
-### Start command
-Use Render’s static web hosting (recommended). If Render requires a start command, you can typically omit it for static.
+### Publish directory
+```
+dist
+```
 
 ### Environment variables
-Set:
-- `VITE_API_URL=<backend render URL e.g. https://your-backend.onrender.com>`
-- `VITE_APP_URL=<frontend render URL e.g. https://your-frontend.onrender.com>`
-
-Cloudinary vars (if used by the app):
-- `VITE_CLOUDINARY_CLOUD_NAME`
-- `VITE_CLOUDINARY_UPLOAD_PRESET`
+| Variable | Example / Notes |
+|---|---|
+| `VITE_API_URL` | `https://<your-backend>.onrender.com` |
+| `VITE_APP_URL` | `https://<your-frontend>.onrender.com` |
+| `VITE_CLOUDINARY_CLOUD_NAME` | Optional |
+| `VITE_CLOUDINARY_UPLOAD_PRESET` | Optional |
 
 ## 4) CORS
-After deploy, ensure the frontend origin is allowed.
-- Make sure backend `FRONTEND_URL` matches the frontend Render URL exactly.
+The backend allowlist reads `FRONTEND_URL` from env (`server.ts`). Make sure it matches the frontend Render URL exactly (including `https://`).
 
-## 5) First-time database setup / migrations
-If your Render database is empty, run the backend setup script locally or via Render console:
-- `npm run setup:system`
+## 5) First-time database setup
+If the Render Postgres database is empty, run the setup script once (Render Shell / local):
+```bash
+npm run setup:system
+```
 
-If your Render DB already has tables, you may only need:
-- `npm run db:sync`
-
-(Which one to run depends on your current DB state.)
+If migrations/sync is needed later:
+```bash
+npm run db:sync
+```
 
