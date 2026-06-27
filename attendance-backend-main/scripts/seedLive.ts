@@ -13,7 +13,7 @@ const sequelize = new Sequelize(DATABASE_URL, {
 });
 
 (async () => {
-  const { default: Visitor } = await import("../models/visitor.ts");
+  const { default: Visitor } = await import("../models/visitor");
 
   await sequelize.authenticate();
   console.log("✅ Connected to live database");
