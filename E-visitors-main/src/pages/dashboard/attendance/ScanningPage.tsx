@@ -123,7 +123,7 @@ function ScanningPage() {
     duration: '',
     hostName: '',
     profilePhoto: '',
-    idProofType: 'National ID',
+    idProofType: 'NATIONAL_ID',
     idNumber: '',
     status: 'Employee',
     docType: 'Personal ID',
@@ -347,7 +347,7 @@ useEffect(() => {
     setVisitorForm({
       mobile: '', email: '', fullName: '', passType: 'Visitor', visitorCompany: '',
       purpose: '', badgeId: '', whenToMeet: '', date: '', time: '', department: 'ICT',
-      duration: '', hostName: '', profilePhoto: '', idProofType: 'National ID', idNumber: '',
+      duration: '', hostName: '', profilePhoto: '', idProofType: 'NATIONAL_ID', idNumber: '',
       status: 'Employee', docType: 'Personal ID', hasEquipment: false
     })
     setSelectedMode('')

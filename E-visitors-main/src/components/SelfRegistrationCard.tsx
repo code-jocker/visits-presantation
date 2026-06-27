@@ -63,7 +63,7 @@ const initialVisitorForm: VisitorForm = {
   department: 'ICT',
   hostName: '',
   profilePhoto: '',
-  idProofType: 'National ID',
+  idProofType: 'NATIONAL_ID',
   idNumber: '',
   hasEquipment: false,
 }
@@ -512,7 +512,7 @@ useEffect(() => {
                                   onChange={(e) => handleInputChange('idProofType', e.target.value)}
                                   className="w-full px-5 py-3.5 sm:py-4 border-2 border-gray-100 rounded-xl sm:rounded-[24px] text-sm font-black text-[#1A3263] bg-white focus:border-[#1A3263] outline-none transition-all shadow-sm"
                                 >
-                                  <option value="National ID">National ID</option>
+                                  <option value="NATIONAL_ID">National ID</option>
                                   <option value="Passport">Passport</option>
                                   <option value="Driving License">Driving License</option>
                                   <option value="Other">Other</option>

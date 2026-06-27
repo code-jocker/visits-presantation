@@ -53,7 +53,7 @@ function AttendModal({ isOpen, onClose }: AttendModalProps) {
     duration: '',
     hostName: '',
     profilePhoto: '',
-    idProofType: 'National ID',
+    idProofType: 'NATIONAL_ID',
     idNumber: ''
   })
 
@@ -106,7 +106,7 @@ function AttendModal({ isOpen, onClose }: AttendModalProps) {
       duration: '',
       hostName: '',
       profilePhoto: '',
-      idProofType: 'National ID',
+      idProofType: 'NATIONAL_ID',
       idNumber: ''
     })
     setSelectedMode('')
@@ -399,7 +399,7 @@ function AttendModal({ isOpen, onClose }: AttendModalProps) {
                       onChange={(e) => handleInputChange('idProofType', e.target.value)}
                       className="w-full text-black px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      <option value="National ID">National ID</option>
+                      <option value="NATIONAL_ID">National ID</option>
                       <option value="Passport">Passport</option>
                       <option value="Driving License">Driving License</option>
                       <option value="Igipande">Igipande</option>

@@ -87,7 +87,7 @@ Visitor.init({
         allowNull: true,
     },
     idProofType: {
-        type: DataTypes.ENUM('AADHAR', 'PASSPORT', 'DRIVING_LICENSE', 'VOTER_ID', 'OTHER'),
+        type: DataTypes.ENUM('AADHAR', 'PASSPORT', 'DRIVING_LICENSE', 'VOTER_ID', 'NATIONAL_ID', 'OTHER'),
         allowNull: true,
     },
     idNumber: {
