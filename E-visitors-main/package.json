@@ -1,0 +1,50 @@
+{
+  "name": "attendance-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@amcharts/amcharts4-geodata": "^4.1.31",
+    "@amcharts/amcharts5": "^5.15.6",
+    "@amcharts/amcharts5-geodata": "^5.1.5",
+    "@tailwindcss/vite": "^4.1.18",
+    "@tanstack/react-query": "^5.90.21",
+    "@tensorflow-models/face-detection": "^1.0.3",
+    "@tensorflow/tfjs-backend-webgl": "^4.22.0",
+    "@tensorflow/tfjs-converter": "^4.22.0",
+    "@tensorflow/tfjs-core": "^4.22.0",
+    "@zxing/browser": "^0.2.0",
+    "apexcharts": "^5.3.6",
+    "axios": "^1.13.5",
+    "lottie-react": "^2.4.1",
+    "lucide-react": "^0.563.0",
+    "qrcode": "^1.5.4",
+    "react": "^19.2.0",
+    "react-apexcharts": "^1.9.0",
+    "react-dom": "^19.2.0",
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^7.13.0",
+    "react-toastify": "^11.0.5",
+    "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react-swc": "^4.2.2",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "vite": "^7.2.4"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "worktrees": {
+    "wt-1780473376037-1": {
+      "branch": "lavish-argon",
+      "path": "d:\\E-visitors-main\\.kilo\\worktrees\\lavish-argon",
+      "parentBranch": "main",
+      "createdAt": "2026-06-03T07:56:16.037Z",
+      "remote": "origin"
+    }
+  },
+  "sessions": {
+    "ses_173844449ffe8KaXfcJJZGZVhN": {
+      "worktreeId": "wt-1780473376037-1",
+      "createdAt": "2026-06-03T07:56:19.776Z"
+    }
+  },
+  "tabOrder": {
+    "local": [
+      "pending:1"
+    ]
+  },
+  "worktreeOrder": [
+    "wt-1780473376037-1"
+  ]
+}
