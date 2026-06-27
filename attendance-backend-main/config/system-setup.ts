@@ -274,7 +274,10 @@ const setupSystem = async () => {
         console.log('✅ Database connection established successfully.');
 
         // Disable foreign key checks temporarily to allow dropping tables in any order
-        await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+        // Note: SET FOREIGN_KEY_CHECKS is MySQL-specific; skip for PostgreSQL
+        if ((sequelize as any).dialect?.name !== 'postgres') {
+            await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
+        }
 
 
         console.log('🔄 Dropping existing tables...');
@@ -323,7 +326,9 @@ const setupSystem = async () => {
         }
 
         // Re-enable foreign key checks
-        await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+        if ((sequelize as any).dialect?.name !== 'postgres') {
+            await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+        }
 
         console.log('🔄 Creating database schema...');
         // Use force: true to ensure tables are recreated from scratch

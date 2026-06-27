@@ -15,7 +15,7 @@ services:
       - key: FRONTEND_URL
         value: https://evisitors-frontend.onrender.com
       - key: DATABASE_URL
-        value: postgresql://evisitors_user:RK0uvG8ZSkHH551BH2GZ7YWqtE25q37l@dpg-d8h6vtddt1ts7383hlu0-a:5432/evisitors
+        value: postgresql://evisitors_user:RK0uvG8ZSkHH551BH2GZ7YWqtE25q37l@dpg-d8h6vtddt1ts7383hlu0-a.oregon-postgres.render.com/evisitors
       - key: COOKIE_DOMAIN
         value: .onrender.com
 
