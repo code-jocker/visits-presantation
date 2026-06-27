@@ -19,13 +19,13 @@ services:
       - key: COOKIE_DOMAIN
         value: .onrender.com
 
-  - type: static
+  - type: web
     name: evisitors-frontend
-    runtime: static
+    runtime: node
     plan: free
     rootDir: E-visitors-main
     buildCommand: npm install && npm run build
-    publishPath: dist
+    startCommand: npx serve dist -l $PORT
     envVars:
       - key: VITE_API_URL
         value: https://evisitors-backend.onrender.com
