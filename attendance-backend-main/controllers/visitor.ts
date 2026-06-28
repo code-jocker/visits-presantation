@@ -386,10 +386,41 @@ export class VisitorController {
             }
         }
 
+        // Auto-report trigger: check threshold after successful check-in
+        let reportGenerated = false;
+        try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const reportThreshold = 20;
+            
+            const checkedInToday = await db.Visitor.count({
+                where: {
+                    entryTime: { [Op.gte]: today },
+                    status: { [Op.in]: ['CHECKED_IN', 'ACTIVE'] }
+                }
+            });
+            
+            if (checkedInToday >= reportThreshold) {
+                const { ReportController } = require('./report');
+                const reportCtrl = new ReportController();
+                // Use internal method that doesn't require auth
+                const reportResult = await reportCtrl.generateAutoReport({ department });
+                
+                if (reportResult?.result?.generated) {
+                    console.log(`[AutoReport] Report generated, deleted ${reportResult.result.visitorsDeleted} visitors`);
+                    reportGenerated = true;
+                }
+            }
+        } catch (reportErr) {
+            console.error('[AutoReport] Auto-report generation failed:', reportErr);
+            // Don't fail the check-in if report fails
+        }
+
         res(200, ServiceResponse.success("Visitor checked in successfully", {
             badgeId: newVisitor.badgeId,
             visitorId: newVisitor.id,
             sms: smsResult,
+            reportGenerated,
         }));
 
     }
@@ -451,10 +482,39 @@ export class VisitorController {
             message: buildVisitorSmsMessage(newVisitor.toJSON()),
         });
 
+        // Auto-report trigger: check threshold after successful check-in
+        let reportGenerated = false;
+        try {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const reportThreshold = 20;
+            
+            const checkedInToday = await db.Visitor.count({
+                where: {
+                    entryTime: { [Op.gte]: today },
+                    status: { [Op.in]: ['CHECKED_IN', 'ACTIVE'] }
+                }
+            });
+            
+            if (checkedInToday >= reportThreshold) {
+                const { ReportController } = require('./report');
+                const reportCtrl = new ReportController();
+                const reportResult = await reportCtrl.autoGenerateReport({ department });
+                
+                if (reportResult?.result?.generated) {
+                    console.log(`[AutoReport] Report generated, deleted ${reportResult.result.visitorsDeleted} visitors`);
+                    reportGenerated = true;
+                }
+            }
+        } catch (reportErr) {
+            console.error('[AutoReport] Auto-report generation failed:', reportErr);
+        }
+
         res(200, ServiceResponse.success("Visitor checked in successfully", {
             badgeId: newVisitor.badgeId,
             visitorId: newVisitor.id,
             sms: smsResult,
+            reportGenerated,
         }));
     }
 

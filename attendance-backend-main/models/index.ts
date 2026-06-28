@@ -13,6 +13,7 @@ import Card from "./card";
 import Visitor from "./visitor";
 import SystemFeature from "./systemFeature";
 import Notification from "./notification";
+import Report from "./report";
 
 // Centralized associations  of all models for easy import in other parts of the application
 User.belongsToMany(Role,{
@@ -110,6 +111,7 @@ const db = {
     Visitor,
     SystemFeature,
     Notification,
+    Report,
 };
 
 export default db;

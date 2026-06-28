@@ -408,6 +408,9 @@ const models: TsoaRoute.Models = {
             "reportCount": {"dataType":"double"},
             "visitorCount": {"dataType":"double"},
             "threshold": {"dataType":"double"},
+            "visitorsDeleted": {"dataType":"double"},
+            "format": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["excel"]},{"dataType":"enum","enums":["excel_v2"]},{"dataType":"enum","enums":["csv"]},{"dataType":"enum","enums":["word"]},{"dataType":"enum","enums":["pdf"]},{"dataType":"enum","enums":["html"]}]},
+            "reportId": {"dataType":"string"},
         },
         "additionalProperties": true,
     },
@@ -429,6 +432,28 @@ const models: TsoaRoute.Models = {
             "success": {"dataType":"boolean","required":true},
             "message": {"dataType":"string","required":true},
             "result": {"dataType":"union","subSchemas":[{"dataType":"nestedObjectLiteral","nestedProperties":{"files":{"dataType":"array","array":{"dataType":"nestedObjectLiteral","nestedProperties":{"createdAt":{"dataType":"string","required":true},"size":{"dataType":"double","required":true},"name":{"dataType":"string","required":true}}},"required":true}}},{"dataType":"enum","enums":[null]}],"required":true},
+            "statusCode": {"dataType":"double","required":true},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "AutoDeleteResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "deletedCount": {"dataType":"double","required":true},
+            "deletedFiles": {"dataType":"array","array":{"dataType":"string"},"required":true},
+            "retentionDays": {"dataType":"double","required":true},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ServiceResponse_AutoDeleteResponse_": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string","required":true},
+            "result": {"dataType":"union","subSchemas":[{"ref":"AutoDeleteResponse"},{"dataType":"enum","enums":[null]}],"required":true},
             "statusCode": {"dataType":"double","required":true},
         },
         "additionalProperties": true,
@@ -1979,7 +2004,7 @@ export function RegisterRoutes(app: Router) {
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         const argsReportController_autoGenerateReport: Record<string, TsoaRoute.ParameterSchema> = {
-                body: {"in":"body","name":"body","dataType":"nestedObjectLiteral","nestedProperties":{"department":{"dataType":"string"}}},
+                body: {"in":"body","name":"body","dataType":"nestedObjectLiteral","nestedProperties":{"force":{"dataType":"boolean"},"format":{"dataType":"union","subSchemas":[{"dataType":"enum","enums":["excel"]},{"dataType":"enum","enums":["excel_v2"]},{"dataType":"enum","enums":["csv"]},{"dataType":"enum","enums":["word"]},{"dataType":"enum","enums":["pdf"]},{"dataType":"enum","enums":["html"]}]},"department":{"dataType":"string"}}},
         };
         app.post('/api/reports/auto',
             authenticateMiddleware([{"jwt":["report:create"]}]),
@@ -1998,6 +2023,37 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'autoGenerateReport',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsReportController_generateReport: Record<string, TsoaRoute.ParameterSchema> = {
+                body: {"in":"body","name":"body","dataType":"nestedObjectLiteral","nestedProperties":{"department":{"dataType":"string"},"format":{"dataType":"union","subSchemas":[{"dataType":"enum","enums":["excel"]},{"dataType":"enum","enums":["excel_v2"]},{"dataType":"enum","enums":["csv"]},{"dataType":"enum","enums":["word"]},{"dataType":"enum","enums":["pdf"]},{"dataType":"enum","enums":["html"]}]}}},
+        };
+        app.post('/api/reports/generate',
+            authenticateMiddleware([{"jwt":["report:create"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ReportController)),
+            ...(fetchMiddlewares<RequestHandler>(ReportController.prototype.generateReport)),
+
+            async function ReportController_generateReport(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsReportController_generateReport, request, response });
+
+                const controller = new ReportController();
+
+              await templateService.apiHandler({
+                methodName: 'generateReport',
                 controller,
                 response,
                 next,
@@ -2028,6 +2084,37 @@ export function RegisterRoutes(app: Router) {
 
               await templateService.apiHandler({
                 methodName: 'listReports',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsReportController_autoDeleteReports: Record<string, TsoaRoute.ParameterSchema> = {
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"retentionDays":{"dataType":"double"}}},
+        };
+        app.post('/api/reports/auto-delete',
+            authenticateMiddleware([{"jwt":["report:delete"]}]),
+            ...(fetchMiddlewares<RequestHandler>(ReportController)),
+            ...(fetchMiddlewares<RequestHandler>(ReportController.prototype.autoDeleteReports)),
+
+            async function ReportController_autoDeleteReports(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsReportController_autoDeleteReports, request, response });
+
+                const controller = new ReportController();
+
+              await templateService.apiHandler({
+                methodName: 'autoDeleteReports',
                 controller,
                 response,
                 next,

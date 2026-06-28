@@ -7,7 +7,7 @@ interface INotificationAttributes {
     recipientType: "user" | "visitor";
     title: string;
     message: string;
-    type: "appointment_request" | "appointment_confirmed" | "appointment_canceled" | "checkin_pending" | "checkin_approved" | "general";
+type: "appointment_request" | "appointment_confirmed" | "appointment_canceled" | "checkin_pending" | "checkin_approved" | "general" | "report_generated";
     relatedId?: string;
     relatedType?: "appointment" | "visitor" | "visitor_badge";
     isRead: boolean;
@@ -63,7 +63,8 @@ Notification.init({
             "appointment_canceled",
             "checkin_pending",
             "checkin_approved",
-            "general"
+            "general",
+            "report_generated"
         ),
         allowNull: false,
         defaultValue: "general",

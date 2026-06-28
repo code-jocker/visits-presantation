@@ -20,6 +20,7 @@ status?: 'IN' | 'OUT' | 'ACTIVE' | 'CHECKED_IN' | 'CHECKED_OUT' | 'BLACKLISTED';
     updatedAt?: Date;
     entryTime?: Date;
     exitTime?: Date;
+    deletedAt?: Date;
 }
 
 class Visitor extends Model<IVisitorAttributes, Optional<IVisitorAttributes, 'id' | 'createdAt' | 'updatedAt'>> implements IVisitorAttributes {
@@ -116,6 +117,10 @@ Visitor.init({
         allowNull: true,
     },
     exitTime: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
+    deletedAt: {
         type: DataTypes.DATE,
         allowNull: true,
     },

@@ -1069,6 +1069,24 @@
 					"threshold": {
 						"type": "number",
 						"format": "double"
+					},
+					"visitorsDeleted": {
+						"type": "number",
+						"format": "double"
+					},
+					"format": {
+						"type": "string",
+						"enum": [
+							"excel",
+							"excel_v2",
+							"csv",
+							"word",
+							"pdf",
+							"html"
+						]
+					},
+					"reportId": {
+						"type": "string"
 					}
 				},
 				"required": [
@@ -1145,6 +1163,65 @@
 							"files"
 						],
 						"type": "object",
+						"nullable": true
+					},
+					"statusCode": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"success",
+					"message",
+					"result",
+					"statusCode"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"AutoDeleteResponse": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"deletedCount": {
+						"type": "number",
+						"format": "double"
+					},
+					"deletedFiles": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"retentionDays": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"success",
+					"deletedCount",
+					"deletedFiles",
+					"retentionDays"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"ServiceResponse_AutoDeleteResponse_": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					},
+					"result": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/AutoDeleteResponse"
+							}
+						],
 						"nullable": true
 					},
 					"statusCode": {
@@ -4439,8 +4516,76 @@
 						"application/json": {
 							"schema": {
 								"properties": {
+									"force": {
+										"type": "boolean"
+									},
+									"format": {
+										"type": "string",
+										"enum": [
+											"excel",
+											"excel_v2",
+											"csv",
+											"word",
+											"pdf",
+											"html"
+										]
+									},
 									"department": {
 										"type": "string"
+									}
+								},
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/reports/generate": {
+			"post": {
+				"operationId": "GenerateReport",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse_AutoReportResponse_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Reports"
+				],
+				"security": [
+					{
+						"jwt": [
+							"report:create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": false,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"department": {
+										"type": "string"
+									},
+									"format": {
+										"type": "string",
+										"enum": [
+											"excel",
+											"excel_v2",
+											"csv",
+											"word",
+											"pdf",
+											"html"
+										]
 									}
 								},
 								"type": "object"
@@ -4476,6 +4621,50 @@
 					}
 				],
 				"parameters": []
+			}
+		},
+		"/api/reports/auto-delete": {
+			"post": {
+				"operationId": "AutoDeleteReports",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse_AutoDeleteResponse_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Reports"
+				],
+				"security": [
+					{
+						"jwt": [
+							"report:delete"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"retentionDays": {
+										"type": "number",
+										"format": "double"
+									}
+								},
+								"type": "object"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/api/reports/download/{filename}": {
