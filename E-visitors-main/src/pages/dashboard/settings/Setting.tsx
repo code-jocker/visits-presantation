@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { FaInfo, FaLock, FaUsers, FaClipboardList, FaSearch, FaPlus, FaEdit, FaTrash, FaSave, FaToggleOn, FaToggleOff, FaSpinner } from 'react-icons/fa'
+import { FaInfo, FaLock, FaUsers, FaClipboardList, FaSearch, FaPlus, FaEdit, FaTrash, FaSave, FaToggleOn, FaToggleOff, FaSpinner, FaFile, FaTrashAlt } from 'react-icons/fa'
 import DeleteLogModal from '../../../components/modals/DeleteLogModal'
 import { visitorApi } from '../../../api/visitor'
+import { reportsApi } from '../../../api/reports'
 import { toast } from 'react-toastify'
 
 let featuresCache: { selfRegistrationEnabled: boolean; selfCheckoutEnabled: boolean } | null = null
@@ -14,6 +15,9 @@ function Settings() {
   const [selfCheckoutEnabled, setSelfCheckoutEnabled] = useState(true)
   const [featuresLoading, setFeaturesLoading] = useState(true)
   const [savingFeature, setSavingFeature] = useState<string | null>(null)
+
+  const [retentionDays, setRetentionDays] = useState(30)
+  const [savingRetention, setSavingRetention] = useState(false)
 
   useEffect(() => {
     if (featuresCache) {
@@ -33,6 +37,14 @@ function Settings() {
       toast.error(err?.response?.data?.message || err?.message || 'Failed to load system features')
     }).finally(() => {
       setFeaturesLoading(false)
+    })
+
+    reportsApi.getRetention().then((res) => {
+      if (res.success) {
+        setRetentionDays(res.result.retentionDays)
+      }
+    }).catch((err) => {
+      console.error('[Retention] Load error:', err)
     })
   }, [])
 
@@ -81,6 +93,23 @@ function Settings() {
       }
     } finally {
       setSavingFeature(null)
+    }
+  }
+
+  const handleSaveRetention = async () => {
+    if (savingRetention) return
+    setSavingRetention(true)
+    try {
+      const res = await reportsApi.setRetention(retentionDays)
+      if (res.success) {
+        toast.success(`Report retention set to ${retentionDays} days`)
+      } else {
+        toast.error(res.message || 'Failed to save retention setting')
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || err?.message || 'Failed to save retention setting')
+    } finally {
+      setSavingRetention(false)
     }
   }
 
@@ -148,6 +177,15 @@ function Settings() {
     }
   }
 
+  const tabs = [
+    { id: 'webinfo', label: 'Web Info', icon: FaInfo },
+    { id: 'authentication', label: 'Authentication', icon: FaLock },
+    { id: 'roles', label: 'Roles', icon: FaUsers },
+    { id: 'features', label: 'Features', icon: FaToggleOn },
+    { id: 'reports', label: 'Reports', icon: FaFile },
+    { id: 'logs', label: 'System Logs', icon: FaClipboardList },
+  ]
+
   return (
     <div className="flex flex-col h-full">
       <style dangerouslySetInnerHTML={{
@@ -169,61 +207,20 @@ function Settings() {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="border-b border-gray-200">
           <nav className="flex space-x-8 px-6 bg-[#1A3263]">
-            <button
-              onClick={() => setActiveTab('webinfo')}
-              className={`py-4 px-1 border-b-3 font-medium  text-medium !font-bold ${
-                activeTab === 'webinfo'
-                  ? 'border-yellow-500 text-white'
-                  : 'border-transparent text-gray-300  hover:text-gray-400'
-              }`}
-            >
-              <FaInfo className="inline mr-2" />
-              Web Info
-            </button>
-            <button
-              onClick={() => setActiveTab('authentication')}
-              className={`py-4 px-1 border-b-2 font-medium text-medium !font-bold ${
-                activeTab === 'authentication'
-                  ? 'border-yellow-500 text-white'
-                  : 'border-transparent text-gray-300 hover:text-gray-400'
-              }`}
-            >
-              <FaLock className="inline mr-2" />
-              Authentication
-            </button>
-            <button
-              onClick={() => setActiveTab('roles')}
-              className={`py-4 px-1 border-b-4 font-medium text-medium !font-bold ${
-                activeTab === 'roles'
-                  ? 'border-yellow-500 text-white'
-                  : 'border-transparent text-gray-300 hover:text-gray-400'
-              }`}
-            >
-              <FaUsers className="inline mr-2" />
-              Roles
-            </button>
-            <button
-              onClick={() => setActiveTab('features')}
-              className={`py-4 px-1 border-b-2 font-medium text-medium !font-bold ${
-                activeTab === 'features'
-                  ? 'border-yellow-500 text-white'
-                  : 'border-transparent text-gray-300 hover:text-gray-400'
-              }`}
-            >
-              <FaToggleOn className="inline mr-2" />
-              Features
-            </button>
-            <button
-              onClick={() => setActiveTab('logs')}
-              className={`py-4 px-1 border-b-2 font-medium text-medium !font-bold ${
-                activeTab === 'logs'
-                  ? 'border-yellow-500 text-white'
-                  : 'border-transparent text-gray-300 hover:text-gray-400'
-              }`}
-            >
-              <FaClipboardList className="inline mr-2" />
-              System Logs
-            </button>
+            {tabs.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className={`py-4 px-1 border-b-3 font-medium text-medium !font-bold ${
+                  activeTab === id
+                    ? 'border-yellow-500 text-white'
+                    : 'border-transparent text-gray-300 hover:text-gray-400'
+                }`}
+              >
+                <Icon className="inline mr-2" />
+                {label}
+              </button>
+            ))}
           </nav>
         </div>
 
@@ -449,6 +446,64 @@ function Settings() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Reports Tab */}
+        {activeTab === 'reports' && (
+          <div className="p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Report Settings</h2>
+            <p className="text-gray-500 text-sm mb-6">Configure automatic report retention and cleanup settings.</p>
+            
+            <div className="space-y-6 max-w-2xl">
+              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <h3 className="font-medium text-gray-900 mb-3">Auto-Delete Retention Period</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Set the default number of days to keep generated reports before automatic deletion.
+                </p>
+                <div className="flex gap-4 items-end">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Retention Period (days)</label>
+                    <select
+                      value={retentionDays}
+                      onChange={(e) => setRetentionDays(Number(e.target.value))}
+                      className="w-full px-3 py-2 text-black border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value={7}>7 Days</option>
+                      <option value={30}>30 Days</option>
+                      <option value={90}>90 Days</option>
+                    </select>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Reports older than <span className="font-semibold text-gray-900">{retentionDays} days</span> will be automatically deleted.
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleSaveRetention}
+                    disabled={savingRetention}
+                    className="flex items-center gap-2 bg-[#1A3263] text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  >
+                    {savingRetention ? (
+                      <FaSpinner className="animate-spin" size={14} />
+                    ) : (
+                      <FaSave size={14} />
+                    )}
+                    Save
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <FaTrashAlt className="text-yellow-600 mt-0.5" size={16} />
+                  <div>
+                    <h3 className="font-medium text-yellow-900 mb-1">Auto Delete Reports</h3>
+                    <p className="text-sm text-yellow-800">
+                      Use the "Auto Delete Report" button on the Reports page to immediately delete reports older than the configured retention period.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

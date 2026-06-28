@@ -31,6 +31,15 @@ const getVisitorFieldValue = (visitor: Visitor, fieldId: string): string => {
       return visitor.fullName
     case 'email':
       return visitor.email || '-'
+    case 'phoneNumber':
+    case 'phone':
+      // Frontend expects `phoneNumber`; backend visitor type uses `mobile`
+      return (visitor as any).phoneNumber
+        ? String((visitor as any).phoneNumber)
+        : visitor.mobile
+          ? String(visitor.mobile)
+          : '-'
+
     case 'company':
       return visitor.visitorCompany || '-'
     case 'purpose':
@@ -47,6 +56,9 @@ const getVisitorFieldValue = (visitor: Visitor, fieldId: string): string => {
       return visitor.status || 'ACTIVE'
     case 'badge':
       return visitor.badgeId || '-'
+    case 'signature':
+      // Blank column for manual signature after printing
+      return '-'
     default:
       return '-'
   }
@@ -73,7 +85,11 @@ const buildReportHtml = ({
   fields: { id: string; label: string }[]
   rows: ReportField[][]
 }) => {
+  // Only render selected columns.
+  // `fields` includes *all possible* fields but the `rows` are built based on `selectedFields`.
+  // So we must align headers to `rows` order (selected fields order).
   const tableHeaders = fields
+    .filter(field => rows.length === 0 || rows[0]?.some(cell => cell.id === field.id))
     .map(field => `<th>${escapeHtml(field.label)}</th>`)
     .join('')
   const tableRows = rows

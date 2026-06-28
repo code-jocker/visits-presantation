@@ -6,6 +6,7 @@ import EquipmentModal from '../../../components/modals/EquipmentModal'
 import AppointmentModal from '../../../components/modals/AppointmentModal'
 import { visitorApi, type RecentTap } from '../../../api/visitor'
 import { client } from '../../../api/clients'
+import { reportsApi } from '../../../api/reports'
 
 import { validatePhoneWithNumverify } from '../../../api/phoneVerification'
 import FaceVerify from '../../../components/camera/FaceVerify'
@@ -64,6 +65,30 @@ function ScanningPage() {
     try {
       await handleSubmit()
       await loadRecentTaps()
+      
+      // Auto-report check after check-in
+      if (reportMessage === null) {
+        try {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const checkedInCount = recentTaps.filter(t => 
+            t.entryTime && new Date(t.entryTime) >= today
+          ).length;
+          
+if (checkedInCount >= 20) {
+             const reportRes = await reportsApi.autoGenerate({ 
+               department: visitorForm.department,
+               format: selectedReportFormat 
+             });
+             if (reportRes.result?.generated) {
+               setReportMessage(`Auto-report (${reportRes.result.format?.toUpperCase()}) generated! ${reportRes.result.visitorCount} visitors processed.`);
+               await loadRecentTaps();
+             }
+           }
+        } catch (reportErr) {
+          console.error('Auto-report check failed:', reportErr);
+        }
+      }
     } finally {
       setTimeout(() => setFaceMatchGuard(false), 2500)
     }
@@ -87,13 +112,14 @@ function ScanningPage() {
     | { status: 'invalid'; message: string }
     | { status: 'error'; message: string }
   >({ status: 'idle' })
-  const [searchName, setSearchName] = useState('')
+const [searchName, setSearchName] = useState('')
   const [hasAppointment, setHasAppointment] = useState(false)
   // NOTE: keeping recent taps state, but removing unused vars to satisfy TS lint.
   // Keeping these states for future UX; ensure they are referenced below.
   const [isLoadingTaps, setIsLoadingTaps] = useState(false)
   const [tapsError, setTapsError] = useState<string | null>(null)
   const [reportMessage, setReportMessage] = useState<string | null>(null)
+  const selectedReportFormat = 'excel' as const
 
 
 
@@ -121,13 +147,13 @@ function ScanningPage() {
     whenToMeet: '',
     date: '',
     time: '',
-    department: 'ICT',
+    department: 'Finance',
     duration: '',
     hostName: '',
     profilePhoto: '',
     idProofType: 'NATIONAL_ID',
     idNumber: '',
-    status: 'Employee',
+    status: 'Visitor',
     docType: 'Personal ID',
     hasEquipment: false
   })

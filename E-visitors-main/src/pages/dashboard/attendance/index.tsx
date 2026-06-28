@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
-import { FaEdit, FaFilePdf, FaFileWord, FaPlus, FaPrint, FaSearch, FaTrash, FaUserCheck, FaUserClock, FaUserTimes, FaUsers } from 'react-icons/fa'
+import { FaEdit, FaFilePdf, FaFileWord, FaPlus, FaPrint, FaSearch, FaTrash, FaUserCheck, FaUserClock, FaUserTimes, FaUsers, FaCheckCircle } from 'react-icons/fa'
 import AddVisitorModal from '../../../components/modals/AddVisitorModal'
 import ExportReportModal from '../../../components/modals/ExportReportModal'
 import { generateVisitorReport } from '../../../utils/reportExport'
 import { visitorApi, type Visitor, type VisitorCreateRequest, type VisitorUpdateRequest } from '../../../api/visitor'
+import { reportsApi } from '../../../api/reports'
 
 function Attendance() {
   const [visitors, setVisitors] = useState<Visitor[]>([])
@@ -20,6 +21,8 @@ function Attendance() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [reportMessage, setReportMessage] = useState<string | null>(null)
+  const [selectedReportFormat, setSelectedReportFormat] = useState<'excel' | 'excel_v2' | 'word' | 'pdf'>('excel')
 
   const departments = Array.from(new Set(visitors.map(v => v.department).filter(Boolean))) as string[]
 
@@ -121,7 +124,35 @@ function Attendance() {
     try {
       setSaving(true)
       setError(null)
-      await visitorApi.update(visitor.id, { status: 'CHECKED_IN', entryTime: new Date().toISOString(), exitTime: null })
+      const updateRes = await visitorApi.update(visitor.id, { status: 'CHECKED_IN', entryTime: new Date().toISOString(), exitTime: null })
+      
+      // Check if report was auto-generated (backend returns reportGenerated flag)
+      if ((updateRes as any)?.reportGenerated) {
+        setReportMessage('Report auto-generated! Visitors cleared from system.')
+      }
+      
+      // Also trigger auto-report API check with selected format
+      try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const checkedInCount = visitors.filter(v => 
+          (v.status === 'CHECKED_IN' || v.status === 'IN') && 
+          v.entryTime && new Date(v.entryTime) >= today
+        ).length + 1; // +1 for the one we just updated
+        
+        if (checkedInCount >= 20) {
+          const reportRes = await reportsApi.autoGenerate({ 
+            department: visitor.department,
+            format: selectedReportFormat 
+          });
+          if (reportRes.result?.generated) {
+            setReportMessage(`Auto-report (${reportRes.result.format?.toUpperCase()}) generated: ${reportRes.result.visitorCount} visitors processed. File: ${reportRes.result.downloadUrl?.split('/').pop()}`);
+          }
+        }
+      } catch (reportErr) {
+        console.error('Auto-report check failed:', reportErr);
+      }
+      
       await fetchVisitors()
     } catch (err) {
       console.error('Error checking in visitor:', err)
@@ -157,6 +188,7 @@ function Attendance() {
 
   const exportFields = [
     { id: 'name', label: 'Visitor Name' },
+    { id: 'phoneNumber', label: 'Phone Number' },
     { id: 'email', label: 'Email' },
     { id: 'company', label: 'Company' },
     { id: 'purpose', label: 'Purpose' },
@@ -166,6 +198,7 @@ function Attendance() {
     { id: 'checkOut', label: 'Check Out Time' },
     { id: 'status', label: 'Status' },
     { id: 'badge', label: 'Badge ID' },
+    { id: 'signature', label: 'Signature' },
   ]
 
   const filteredVisitors = useMemo(() => {
@@ -198,7 +231,8 @@ function Attendance() {
     { title: 'Total Visitors', value: visitors.length, icon: FaUsers, color: 'bg-blue-500' },
     { title: 'Checked In', value: visitors.filter(v => v.status === 'CHECKED_IN' || v.status === 'IN').length, icon: FaUserCheck, color: 'bg-green-500' },
     { title: 'Active', value: visitors.filter(v => v.status === 'ACTIVE').length, icon: FaUserClock, color: 'bg-yellow-500' },
-    { title: 'Checked Out', value: visitors.filter(v => v.status === 'CHECKED_OUT' || v.status === 'OUT').length, icon: FaUserTimes, color: 'bg-gray-500' }
+    { title: 'Checked Out', value: visitors.filter(v => v.status === 'CHECKED_OUT' || v.status === 'OUT').length, icon: FaUserTimes, color: 'bg-gray-500' },
+    { title: 'Report Status', value: reportMessage ? 'Ready' : 'Pending', icon: FaCheckCircle, color: reportMessage ? 'bg-emerald-500' : 'bg-gray-400' }
   ]
 
   const formatDateTime = (value?: string) => {
@@ -243,26 +277,38 @@ function Attendance() {
 
       <div className="flex-1 overflow-y-auto space-y-6" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat) => {
-            const Icon = stat.icon
-            return (
-              <div key={stat.title} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                    <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                  </div>
-                  <div className={`${stat.color} p-3 rounded-lg`}>
-                    <Icon className="text-white" size={18} />
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-        </div>
+{stats.map((stat) => {
+             const Icon = stat.icon
+             return (
+               <div key={stat.title} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                 <div className="flex items-center justify-between">
+                   <div>
+                     <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                     <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                   </div>
+                   <div className={`${stat.color} p-3 rounded-lg`}>
+                     <Icon className="text-white" size={18} />
+                   </div>
+                 </div>
+               </div>
+             )
+           })}
+         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200">
+{reportMessage && (
+           <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4 flex justify-between items-center">
+             <p className="text-emerald-800 font-medium">{reportMessage}</p>
+             <button 
+               onClick={() => setReportMessage(null)}
+               className="text-emerald-600 hover:text-emerald-800 text-sm underline"
+             >
+               Dismiss
+             </button>
+           </div>
+         )}
+
+         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+           <div className="p-6 border-b border-gray-200">
             <div className="flex flex-wrap items-center gap-3">
               <div className="relative">
                 <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -304,19 +350,36 @@ function Attendance() {
                 onChange={(e) => setEndDateTime(e.target.value)}
                 className="px-4 py-2 text-black border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1A3263] focus:border-transparent"
               />
-              <select
-                value={filterDepartment}
-                onChange={(e) => setFilterDepartment(e.target.value)}
-                className="px-4 py-2 text-black border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1A3263] focus:border-transparent"
-              >
-                <option value="">All Departments</option>
-                {departments.map(dept => (
-                  <option key={dept} value={dept}>{dept}</option>
-                ))}
-              </select>
-              <button onClick={() => handleExport('pdf')} className="flex items-center gap-2 px-3 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors" title="Export as PDF">
-                <FaFilePdf size={16} /><span className="hidden sm:inline">PDF</span>
-              </button>
+<select
+                 value={filterDepartment}
+                 onChange={(e) => setFilterDepartment(e.target.value)}
+                 className="px-4 py-2 text-black border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1A3263] focus:border-transparent"
+               >
+                 <option value="">All Departments</option>
+                 {departments.map(dept => (
+                   <option key={dept} value={dept}>{dept}</option>
+                 ))}
+               </select>
+               
+               <div className="flex items-center gap-2">
+                 <label className="text-sm text-gray-600">Auto-report format:</label>
+                 <select
+                   value={selectedReportFormat}
+                   onChange={(e) => setSelectedReportFormat(e.target.value as 'excel' | 'excel_v2' | 'word' | 'pdf')}
+                   
+                   className="px-3 py-1.5 text-black border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1A3263] focus:border-transparent text-sm"
+                 >
+                   <option value="excel">Excel</option>
+                   <option value="excel_v2">Excel (v2)</option>
+                   
+                   <option value="word">Word</option>
+                   <option value="pdf">PDF</option>
+                 </select>
+               </div>
+               
+               <button onClick={() => handleExport('pdf')} className="flex items-center gap-2 px-3 py-2 text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors" title="Export as PDF">
+                 <FaFilePdf size={16} /><span className="hidden sm:inline">PDF</span>
+               </button>
               <button onClick={() => handleExport('word')} className="flex items-center gap-2 px-3 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors" title="Export as Word">
                 <FaFileWord size={16} /><span className="hidden sm:inline">Word</span>
               </button>
