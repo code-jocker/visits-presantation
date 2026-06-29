@@ -12,6 +12,8 @@ import { RoleController } from './../controllers/role';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ReportController } from './../controllers/report';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { PreRegistrationController } from './../controllers/preRegistration';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { PermissionController } from './../controllers/permission';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { NotificationController } from './../controllers/notification';
@@ -454,6 +456,76 @@ const models: TsoaRoute.Models = {
             "success": {"dataType":"boolean","required":true},
             "message": {"dataType":"string","required":true},
             "result": {"dataType":"union","subSchemas":[{"ref":"AutoDeleteResponse"},{"dataType":"enum","enums":[null]}],"required":true},
+            "statusCode": {"dataType":"double","required":true},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PreRegistrationResponse": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "preRegistrationId": {"dataType":"string","required":true},
+            "fullName": {"dataType":"string","required":true},
+            "mobile": {"dataType":"string"},
+            "email": {"dataType":"string"},
+            "visitorCompany": {"dataType":"string"},
+            "purpose": {"dataType":"string"},
+            "department": {"dataType":"string"},
+            "hostName": {"dataType":"string"},
+            "appointmentDate": {"dataType":"string"},
+            "appointmentTime": {"dataType":"string"},
+            "timeDuration": {"dataType":"string"},
+            "appointmentLocation": {"dataType":"string"},
+            "status": {"dataType":"string","required":true},
+            "profilePhoto": {"dataType":"string"},
+            "qrCode": {"dataType":"string"},
+            "expiresAt": {"dataType":"string"},
+            "approvedAt": {"dataType":"string"},
+            "approvedBy": {"dataType":"string"},
+            "createdAt": {"dataType":"string","required":true},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ServiceResponse_PreRegistrationResponse-Array_": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string","required":true},
+            "result": {"dataType":"union","subSchemas":[{"dataType":"array","array":{"dataType":"refObject","ref":"PreRegistrationResponse"}},{"dataType":"enum","enums":[null]}],"required":true},
+            "statusCode": {"dataType":"double","required":true},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PreRegistrationCreateRequest": {
+        "dataType": "refObject",
+        "properties": {
+            "fullName": {"dataType":"string","required":true},
+            "mobile": {"dataType":"string"},
+            "email": {"dataType":"string"},
+            "visitorCompany": {"dataType":"string"},
+            "purpose": {"dataType":"string"},
+            "department": {"dataType":"string"},
+            "hostName": {"dataType":"string"},
+            "appointmentDate": {"dataType":"string"},
+            "appointmentTime": {"dataType":"string"},
+            "timeDuration": {"dataType":"string"},
+            "appointmentLocation": {"dataType":"string"},
+            "idProofType": {"dataType":"string"},
+            "idNumber": {"dataType":"string"},
+            "profilePhoto": {"dataType":"string"},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ServiceResponse_PreRegistrationResponse-or-null_": {
+        "dataType": "refObject",
+        "properties": {
+            "success": {"dataType":"boolean","required":true},
+            "message": {"dataType":"string","required":true},
+            "result": {"dataType":"union","subSchemas":[{"dataType":"union","subSchemas":[{"ref":"PreRegistrationResponse"},{"dataType":"enum","enums":[null]}]},{"dataType":"enum","enums":[null]}],"required":true},
             "statusCode": {"dataType":"double","required":true},
         },
         "additionalProperties": true,
@@ -2151,6 +2223,258 @@ export function RegisterRoutes(app: Router) {
                 next,
                 validatedArgs,
                 successStatus: undefined,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPreRegistrationController_getAll: Record<string, TsoaRoute.ParameterSchema> = {
+                status: {"in":"query","name":"status","dataType":"string"},
+                date: {"in":"query","name":"date","dataType":"string"},
+                limit: {"in":"query","name":"limit","dataType":"double"},
+        };
+        app.get('/api/pre-registrations',
+            authenticateMiddleware([{"jwt":["preregistration:read"]}]),
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController)),
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController.prototype.getAll)),
+
+            async function PreRegistrationController_getAll(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPreRegistrationController_getAll, request, response });
+
+                const controller = new PreRegistrationController();
+
+              await templateService.apiHandler({
+                methodName: 'getAll',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPreRegistrationController_create: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"body","name":"request","required":true,"ref":"PreRegistrationCreateRequest"},
+                res: {"in":"res","name":"400","required":true,"ref":"ServiceResponse_PreRegistrationResponse-or-null_"},
+        };
+        app.post('/api/pre-registrations',
+            authenticateMiddleware([{"jwt":["preregistration:create"]}]),
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController)),
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController.prototype.create)),
+
+            async function PreRegistrationController_create(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPreRegistrationController_create, request, response });
+
+                const controller = new PreRegistrationController();
+
+              await templateService.apiHandler({
+                methodName: 'create',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPreRegistrationController_publicCreate: Record<string, TsoaRoute.ParameterSchema> = {
+                request: {"in":"body","name":"request","required":true,"ref":"PreRegistrationCreateRequest"},
+                res: {"in":"res","name":"400","required":true,"ref":"ServiceResponse_PreRegistrationResponse-or-null_"},
+        };
+        app.post('/api/pre-registrations/public',
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController)),
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController.prototype.publicCreate)),
+
+            async function PreRegistrationController_publicCreate(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPreRegistrationController_publicCreate, request, response });
+
+                const controller = new PreRegistrationController();
+
+              await templateService.apiHandler({
+                methodName: 'publicCreate',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 201,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPreRegistrationController_getById: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        };
+        app.get('/api/pre-registrations/:id',
+            authenticateMiddleware([{"jwt":["preregistration:read"]}]),
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController)),
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController.prototype.getById)),
+
+            async function PreRegistrationController_getById(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPreRegistrationController_getById, request, response });
+
+                const controller = new PreRegistrationController();
+
+              await templateService.apiHandler({
+                methodName: 'getById',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPreRegistrationController_validate: Record<string, TsoaRoute.ParameterSchema> = {
+                preRegistrationId: {"in":"path","name":"preRegistrationId","required":true,"dataType":"string"},
+        };
+        app.get('/api/pre-registrations/validate/:preRegistrationId',
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController)),
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController.prototype.validate)),
+
+            async function PreRegistrationController_validate(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPreRegistrationController_validate, request, response });
+
+                const controller = new PreRegistrationController();
+
+              await templateService.apiHandler({
+                methodName: 'validate',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPreRegistrationController_approve: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"approvedBy":{"dataType":"string"}}},
+        };
+        app.put('/api/pre-registrations/:id/approve',
+            authenticateMiddleware([{"jwt":["preregistration:update"]}]),
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController)),
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController.prototype.approve)),
+
+            async function PreRegistrationController_approve(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPreRegistrationController_approve, request, response });
+
+                const controller = new PreRegistrationController();
+
+              await templateService.apiHandler({
+                methodName: 'approve',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPreRegistrationController_deny: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+                body: {"in":"body","name":"body","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"rejectedBy":{"dataType":"string"},"rejectionReason":{"dataType":"string"}}},
+        };
+        app.put('/api/pre-registrations/:id/deny',
+            authenticateMiddleware([{"jwt":["preregistration:update"]}]),
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController)),
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController.prototype.deny)),
+
+            async function PreRegistrationController_deny(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPreRegistrationController_deny, request, response });
+
+                const controller = new PreRegistrationController();
+
+              await templateService.apiHandler({
+                methodName: 'deny',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
+              });
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        const argsPreRegistrationController_delete: Record<string, TsoaRoute.ParameterSchema> = {
+                id: {"in":"path","name":"id","required":true,"dataType":"string"},
+        };
+        app.delete('/api/pre-registrations/:id',
+            authenticateMiddleware([{"jwt":["preregistration:delete"]}]),
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController)),
+            ...(fetchMiddlewares<RequestHandler>(PreRegistrationController.prototype.delete)),
+
+            async function PreRegistrationController_delete(request: ExRequest, response: ExResponse, next: any) {
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = templateService.getValidatedArgs({ args: argsPreRegistrationController_delete, request, response });
+
+                const controller = new PreRegistrationController();
+
+              await templateService.apiHandler({
+                methodName: 'delete',
+                controller,
+                response,
+                next,
+                validatedArgs,
+                successStatus: 200,
               });
             } catch (err) {
                 return next(err);

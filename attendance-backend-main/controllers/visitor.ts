@@ -2,6 +2,8 @@ import { Body, Controller, Delete, Get, Path, Post, Put, Query, Route, Tags, Res
 import { ServiceResponse } from "../utils/serviceResponse";
 import { asyncCatch } from "../middlewares/errorHandler";
 import { buildVisitorSmsMessage, sendEasySendSms } from "../utils/easySendSms";
+import { sendEmailNotification } from "../utils/easySendEmail";
+
 import { normalizeVisitorEmail, normalizeVisitorMobile } from "../utils/visitorNormalization";
 import db from "../models";
 import { Op } from "sequelize";
@@ -371,7 +373,29 @@ export class VisitorController {
             message: buildVisitorSmsMessage(newVisitor.toJSON()),
         });
 
+        // Optional email notification
+        if (newVisitor.email) {
+            const subject = 'Visit confirmed';
+            const entryTime = newVisitor.entryTime ? newVisitor.entryTime.toISOString() : new Date().toISOString();
+            const department = newVisitor.department || ''; 
+            const badgeId = newVisitor.badgeId || '';
+
+            const text = `message is ypu are highly welcome thank you to come\n\nFull name: ${newVisitor.fullName}\nDepartment: ${department}\nBadge ID: ${badgeId}\nEntry time: ${entryTime}\n\nThank you.`;
+
+            try {
+                await sendEmailNotification({
+                    to: newVisitor.email,
+                    subject,
+                    text,
+                });
+            } catch (emailErr) {
+                // Do not fail check-in on email issues
+                console.error('[EmailNotification] Failed to send:', emailErr);
+            }
+        }
+
         if (visitor.hostName) {
+
             const hostUser = await db.User.findOne({ where: { fullName: visitor.hostName } });
             if (hostUser) {
                 await db.Notification.create({
@@ -482,7 +506,29 @@ export class VisitorController {
             message: buildVisitorSmsMessage(newVisitor.toJSON()),
         });
 
+        // Optional email notification
+        if (newVisitor.email) {
+            const subject = 'Visit confirmed';
+            const entryTime = newVisitor.entryTime ? newVisitor.entryTime.toISOString() : new Date().toISOString();
+            const department = newVisitor.department || '';
+            const badgeId = newVisitor.badgeId || '';
+
+            const text = `message is ypu are highly welcome thank you to come\n\nFull name: ${newVisitor.fullName}\nDepartment: ${department}\nBadge ID: ${badgeId}\nEntry time: ${entryTime}\n\nThank you.`;
+
+            try {
+                await sendEmailNotification({
+                    to: newVisitor.email,
+                    subject,
+                    text,
+                });
+            } catch (emailErr) {
+                // Do not fail check-in on email issues
+                console.error('[EmailNotification] Failed to send:', emailErr);
+            }
+        }
+
         // Auto-report trigger: check threshold after successful check-in
+
         let reportGenerated = false;
         try {
             const today = new Date();

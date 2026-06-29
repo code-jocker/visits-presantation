@@ -1238,6 +1238,189 @@
 				"type": "object",
 				"additionalProperties": true
 			},
+			"PreRegistrationResponse": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"preRegistrationId": {
+						"type": "string"
+					},
+					"fullName": {
+						"type": "string"
+					},
+					"mobile": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"visitorCompany": {
+						"type": "string"
+					},
+					"purpose": {
+						"type": "string"
+					},
+					"department": {
+						"type": "string"
+					},
+					"hostName": {
+						"type": "string"
+					},
+					"appointmentDate": {
+						"type": "string"
+					},
+					"appointmentTime": {
+						"type": "string"
+					},
+					"timeDuration": {
+						"type": "string"
+					},
+					"appointmentLocation": {
+						"type": "string"
+					},
+					"status": {
+						"type": "string"
+					},
+					"profilePhoto": {
+						"type": "string"
+					},
+					"qrCode": {
+						"type": "string"
+					},
+					"expiresAt": {
+						"type": "string"
+					},
+					"approvedAt": {
+						"type": "string"
+					},
+					"approvedBy": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"preRegistrationId",
+					"fullName",
+					"status",
+					"createdAt"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"ServiceResponse_PreRegistrationResponse-Array_": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					},
+					"result": {
+						"items": {
+							"$ref": "#/components/schemas/PreRegistrationResponse"
+						},
+						"type": "array",
+						"nullable": true
+					},
+					"statusCode": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"success",
+					"message",
+					"result",
+					"statusCode"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"PreRegistrationCreateRequest": {
+				"properties": {
+					"fullName": {
+						"type": "string"
+					},
+					"mobile": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"visitorCompany": {
+						"type": "string"
+					},
+					"purpose": {
+						"type": "string"
+					},
+					"department": {
+						"type": "string"
+					},
+					"hostName": {
+						"type": "string"
+					},
+					"appointmentDate": {
+						"type": "string"
+					},
+					"appointmentTime": {
+						"type": "string"
+					},
+					"timeDuration": {
+						"type": "string"
+					},
+					"appointmentLocation": {
+						"type": "string"
+					},
+					"idProofType": {
+						"type": "string"
+					},
+					"idNumber": {
+						"type": "string"
+					},
+					"profilePhoto": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"fullName"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
+			"ServiceResponse_PreRegistrationResponse-or-null_": {
+				"properties": {
+					"success": {
+						"type": "boolean"
+					},
+					"message": {
+						"type": "string"
+					},
+					"result": {
+						"allOf": [
+							{
+								"$ref": "#/components/schemas/PreRegistrationResponse"
+							}
+						],
+						"nullable": true
+					},
+					"statusCode": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"success",
+					"message",
+					"result",
+					"statusCode"
+				],
+				"type": "object",
+				"additionalProperties": true
+			},
 			"ServiceResponse_PermissionResponse-Array_": {
 				"properties": {
 					"success": {
@@ -4700,6 +4883,358 @@
 						}
 					}
 				]
+			}
+		},
+		"/api/pre-registrations": {
+			"get": {
+				"operationId": "GetAll",
+				"responses": {
+					"200": {
+						"description": "Pre-registrations retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse_PreRegistrationResponse-Array_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"PreRegistrations"
+				],
+				"security": [
+					{
+						"jwt": [
+							"preregistration:read"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "status",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "date",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			},
+			"post": {
+				"operationId": "Create",
+				"responses": {
+					"201": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse_PreRegistrationResponse-or-null_"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse_PreRegistrationResponse-or-null_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"PreRegistrations"
+				],
+				"security": [
+					{
+						"jwt": [
+							"preregistration:create"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/PreRegistrationCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/pre-registrations/public": {
+			"post": {
+				"operationId": "PublicCreate",
+				"responses": {
+					"201": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse_PreRegistrationResponse-or-null_"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse_PreRegistrationResponse-or-null_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"PreRegistrations"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/PreRegistrationCreateRequest"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/pre-registrations/{id}": {
+			"get": {
+				"operationId": "GetById",
+				"responses": {
+					"200": {
+						"description": "Pre-registration retrieved successfully",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse_PreRegistrationResponse-or-null_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"PreRegistrations"
+				],
+				"security": [
+					{
+						"jwt": [
+							"preregistration:read"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "Delete",
+				"responses": {
+					"200": {
+						"description": "Pre-registration deleted",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse_null_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"PreRegistrations"
+				],
+				"security": [
+					{
+						"jwt": [
+							"preregistration:delete"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/pre-registrations/validate/{preRegistrationId}": {
+			"get": {
+				"operationId": "Validate",
+				"responses": {
+					"200": {
+						"description": "Pre-registration validated",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse_PreRegistrationResponse-or-null_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"PreRegistrations"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "preRegistrationId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/pre-registrations/{id}/approve": {
+			"put": {
+				"operationId": "Approve",
+				"responses": {
+					"200": {
+						"description": "Pre-registration approved",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse_PreRegistrationResponse-or-null_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"PreRegistrations"
+				],
+				"security": [
+					{
+						"jwt": [
+							"preregistration:update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"approvedBy": {
+										"type": "string"
+									}
+								},
+								"type": "object"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/pre-registrations/{id}/deny": {
+			"put": {
+				"operationId": "Deny",
+				"responses": {
+					"200": {
+						"description": "Pre-registration denied",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ServiceResponse_PreRegistrationResponse-or-null_"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"PreRegistrations"
+				],
+				"security": [
+					{
+						"jwt": [
+							"preregistration:update"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"properties": {
+									"rejectedBy": {
+										"type": "string"
+									},
+									"rejectionReason": {
+										"type": "string"
+									}
+								},
+								"type": "object"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/api/permissions": {

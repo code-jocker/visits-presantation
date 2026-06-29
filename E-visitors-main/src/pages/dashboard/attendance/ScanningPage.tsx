@@ -65,26 +65,26 @@ function ScanningPage() {
     try {
       await handleSubmit()
       await loadRecentTaps()
-      
+
       // Auto-report check after check-in
       if (reportMessage === null) {
         try {
           const today = new Date();
           today.setHours(0, 0, 0, 0);
-          const checkedInCount = recentTaps.filter(t => 
+          const checkedInCount = recentTaps.filter(t =>
             t.entryTime && new Date(t.entryTime) >= today
           ).length;
-          
-if (checkedInCount >= 20) {
-             const reportRes = await reportsApi.autoGenerate({ 
-               department: visitorForm.department,
-               format: selectedReportFormat 
-             });
-             if (reportRes.result?.generated) {
-               setReportMessage(`Auto-report (${reportRes.result.format?.toUpperCase()}) generated! ${reportRes.result.visitorCount} visitors processed.`);
-               await loadRecentTaps();
-             }
-           }
+
+          if (checkedInCount >= 20) {
+            const reportRes = await reportsApi.autoGenerate({
+              department: visitorForm.department,
+              format: selectedReportFormat
+            });
+            if (reportRes.result?.generated) {
+              setReportMessage(`Auto-report (${reportRes.result.format?.toUpperCase()}) generated! ${reportRes.result.visitorCount} visitors processed.`);
+              await loadRecentTaps();
+            }
+          }
         } catch (reportErr) {
           console.error('Auto-report check failed:', reportErr);
         }
@@ -96,7 +96,7 @@ if (checkedInCount >= 20) {
 
 
 
-   const countryCodes = [
+  const countryCodes = [
     { code: '+250', name: 'Rwanda', flag: 'RW' },
     { code: '+1', name: 'USA', flag: 'US' },
     { code: '+44', name: 'UK', flag: 'GB' },
@@ -112,7 +112,7 @@ if (checkedInCount >= 20) {
     | { status: 'invalid'; message: string }
     | { status: 'error'; message: string }
   >({ status: 'idle' })
-const [searchName, setSearchName] = useState('')
+  const [searchName, setSearchName] = useState('')
   const [hasAppointment, setHasAppointment] = useState(false)
   // NOTE: keeping recent taps state, but removing unused vars to satisfy TS lint.
   // Keeping these states for future UX; ensure they are referenced below.
@@ -180,14 +180,13 @@ const [searchName, setSearchName] = useState('')
   }
 
 
+
   const handleModeSelect = async (modeId: string) => {
     setSelectedMode(modeId)
     setIsScanning(true)
     setTapsError(null)
 
     try {
-      // In production this would trigger the selected device integration (OCR/ID scan, QR scan, RFID tap, face capture).
-      // For frontend wiring we: attempt to fetch visitor/appointment suggestion by current identifiers.
       const res = await visitorApi.getAppointmentForVisitor({
         idNumber: visitorForm.idNumber || undefined,
         phone: visitorForm.mobile || undefined,
@@ -214,7 +213,6 @@ const [searchName, setSearchName] = useState('')
     }
   }
 
-
   const loadRecentTaps = async () => {
     try {
       setIsLoadingTaps(true)
@@ -237,46 +235,45 @@ const [searchName, setSearchName] = useState('')
     }
   }
 
-useEffect(() => {
-     // initial load
-     loadRecentTaps()
-     loadSystemFeatures()
-     // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [])
+  useEffect(() => {
+    // initial load
+    loadRecentTaps()
+    loadSystemFeatures()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-   const loadSystemFeatures = async () => {
-     try {
-       const res = await visitorApi.getSystemFeatures()
-       if (res.success && res.result) {
-         setSelfRegEnabled(res.result.selfRegistrationEnabled)
-         setSelfCheckoutEnabled(res.result.selfCheckoutEnabled)
-       }
-     } catch {
-       // Features default to disabled if API fails
-     }
-   }
-
-    const handleToggleFeature = async (featureKey: 'self_registration' | 'self_checkout', enabled: boolean) => {
-      const setSaving = featureKey === 'self_registration' ? setIsSavingSelfReg : setIsSavingSelfCheckout
-      setSaving(true)
-     try {
-       const payload = { featureKey, isEnabled: !enabled }
-       const res = await visitorApi.updateSystemFeature(payload)
-
-       if (res?.success) {
-         if (featureKey === 'self_registration') setSelfRegEnabled(!enabled)
-         else setSelfCheckoutEnabled(!enabled)
-       }
-     } catch (e: any) {
-       const msg = e?.response?.data?.message || e?.message || 'Failed to update feature'
-       setTapsError(msg)
-     } finally {
-       setSaving(false)
-     }
+  const loadSystemFeatures = async () => {
+    try {
+      const res = await visitorApi.getSystemFeatures()
+      if (res.success && res.result) {
+        setSelfRegEnabled(res.result.selfRegistrationEnabled)
+        setSelfCheckoutEnabled(res.result.selfCheckoutEnabled)
+      }
+    } catch {
+      // Features default to disabled if API fails
     }
+  }
+
+  const handleToggleFeature = async (featureKey: 'self_registration' | 'self_checkout', enabled: boolean) => {
+    const setSaving = featureKey === 'self_registration' ? setIsSavingSelfReg : setIsSavingSelfCheckout
+    setSaving(true)
+    try {
+      const payload = { featureKey, isEnabled: !enabled }
+      const res = await visitorApi.updateSystemFeature(payload)
+
+      if (res?.success) {
+        if (featureKey === 'self_registration') setSelfRegEnabled(!enabled)
+        else setSelfCheckoutEnabled(!enabled)
+      }
+    } catch (e: any) {
+      const msg = e?.response?.data?.message || e?.message || 'Failed to update feature'
+      setTapsError(msg)
+    } finally {
+      setSaving(false)
+    }
+  }
 
   useEffect(() => {
-    // refresh when search changes (light polling via user input)
     const t = setTimeout(() => {
       loadRecentTaps()
     }, 400)
@@ -332,11 +329,7 @@ useEffect(() => {
     }
   }
 
-
   const handleSubmit = async () => {
-    // frontend wiring: submit check-in payload to backend.
-    // backend will handle: duplicate detection, blacklist/watchlist screening,
-    // time-slot validation, badge issuance (QR/RFID), and audit logging.
     try {
       const payload = {
         visitor: {
@@ -358,11 +351,9 @@ useEffect(() => {
       } as any
 
       await visitorApi.checkIn(payload)
-      // refresh list after check-in
       await loadRecentTaps()
       setVisitorForm((prev) => ({ ...prev, badgeId: '', idNumber: '' }))
 
-      // Auto-generate report when threshold reached
       try {
         const reportRes = await client.post('/reports/auto')
         if (reportRes.data && reportRes.data.data && reportRes.data.data.generated) {
@@ -379,7 +370,6 @@ useEffect(() => {
       setTapsError(e?.response?.data?.message || e?.message || 'Failed to submit visitor')
     }
   }
-
 
   const handleReset = () => {
     setVisitorForm({
@@ -399,19 +389,14 @@ useEffect(() => {
     setTimeout(() => setIsRecording(false), 3000)
   }
 
-
-
   const filteredTaps = recentTaps.filter((t) => {
     if (!searchName.trim()) return true
     const haystack = [t.visitorName, t.phoneNumber, t.documentType].filter(Boolean).join(' ')
     return haystack.toLowerCase().includes(searchName.toLowerCase())
   })
 
-
-
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
-      {/* Feature Toggles (Admin/Staff) */}
       <div className="bg-white border-b border-gray-200 px-6 py-3">
         {tapsError && (
           <div className="mb-3 px-3 py-2 text-sm rounded bg-red-50 text-red-700 border border-red-100">
@@ -438,7 +423,7 @@ useEffect(() => {
                 type="button"
                 onClick={() => handleToggleFeature('self_registration', selfRegEnabled)}
                 disabled={isSavingSelfReg}
-className={`flex items-center w-12 h-6 rounded-full transition-colors cursor-pointer border border-gray-200 ${
+                className={`flex items-center w-12 h-6 rounded-full transition-colors cursor-pointer border border-gray-200 ${
                    selfRegEnabled ? 'bg-green-500' : 'bg-gray-200'
                  } ${isSavingSelfReg ? 'opacity-60 cursor-not-allowed' : ''}`}
                 aria-pressed={selfRegEnabled}
@@ -457,7 +442,7 @@ className={`flex items-center w-12 h-6 rounded-full transition-colors cursor-poi
                 type="button"
                 onClick={() => handleToggleFeature('self_checkout', selfCheckoutEnabled)}
                 disabled={isSavingSelfCheckout}
-className={`flex items-center w-12 h-6 rounded-full transition-colors cursor-pointer border border-gray-200 ${
+                className={`flex items-center w-12 h-6 rounded-full transition-colors cursor-pointer border border-gray-200 ${
                    selfCheckoutEnabled ? 'bg-green-500' : 'bg-gray-200'
                  } ${isSavingSelfCheckout ? 'opacity-60 cursor-not-allowed' : ''}`}
                 aria-pressed={selfCheckoutEnabled}
@@ -473,26 +458,24 @@ className={`flex items-center w-12 h-6 rounded-full transition-colors cursor-poi
         </div>
       </div>
 
-      {/* Equipment Modal */}
       <EquipmentModal
         isOpen={showEquipmentModal}
         onClose={() => {
           setShowEquipmentModal(false)
-if (equipmentList.length === 0) {
-             handleInputChange('hasEquipment', false)
-           }
+          if (equipmentList.length === 0) {
+            handleInputChange('hasEquipment', false)
+          }
         }}
         equipmentList={equipmentList}
         setEquipmentList={setEquipmentList}
       />
 
-      {/* Appointment Modal */}
       <AppointmentModal
         isOpen={showAppointmentModal}
         onClose={() => setShowAppointmentModal(false)}
         appointment={appointmentDetails}
       />
-      {/* Top Scanning Area Bar */}
+
       <div className="bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4">
         <span className="text-sm font-semibold text-gray-700 whitespace-nowrap">Scanning Area</span>
         <input
@@ -500,10 +483,8 @@ if (equipmentList.length === 0) {
           className="flex-1 max-w-xl px-3 py-1.5 border-2 border-[#1A3263] rounded text-sm focus:outline-none focus:border-orange-500 text-black"
           placeholder="Scan or enter ID..."
         />
-        {/* adding appointment indicator. */}
-        {/* adding equipement option */}
+
         <div className="ml-auto flex items-center gap-4">
-          {/* Appointment Indicator - Only show when has appointment */}
           {hasAppointment && (
             <button
               onClick={() => setShowAppointmentModal(true)}
@@ -514,68 +495,62 @@ if (equipmentList.length === 0) {
             </button>
           )}
 
-          {/* Equipment Checkbox */}
           <label className="flex items-center gap-2 cursor-pointer">
-<input
-               type="checkbox"
-               checked={visitorForm.hasEquipment}
-               onChange={(e) => {
-                 handleInputChange('hasEquipment', e.target.checked)
-                 if (e.target.checked) setShowEquipmentModal(true)
-               }}
-               className="w-4 h-4 cursor-pointer"
-             />
+            <input
+              type="checkbox"
+              checked={visitorForm.hasEquipment}
+              onChange={(e) => {
+                handleInputChange('hasEquipment', e.target.checked)
+                if (e.target.checked) setShowEquipmentModal(true)
+              }}
+              className="w-4 h-4 cursor-pointer"
+            />
             <span className="text-sm text-gray-600">Equipment</span>
           </label>
-{visitorForm.hasEquipment && equipmentList.length > 0 && (
-             <button
-               onClick={() => setShowEquipmentModal(true)}
-               className="text-xs text-blue-600 hover:text-blue-800 underline"
-             >
-               ({equipmentList.length} items)
-             </button>
-           )}
 
-            {/* Self Registration Toggle */}
+          {visitorForm.hasEquipment && equipmentList.length > 0 && (
             <button
-              onClick={() => handleToggleFeature('self_registration', selfRegEnabled)}
-              disabled={isSavingSelfReg}
-              className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                selfRegEnabled 
-                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-                  : 'bg-gray-50 text-gray-500 border border-gray-200'
-              }`}
-              title="Toggle Self Registration"
+              onClick={() => setShowEquipmentModal(true)}
+              className="text-xs text-blue-600 hover:text-blue-800 underline"
             >
-              {selfRegEnabled ? <FaToggleOn className="text-emerald-600" /> : <FaToggleOff className="text-gray-400" />}
-              <span>Self Reg</span>
+              ({equipmentList.length} items)
             </button>
+          )}
 
-            {/* Self Checkout Toggle */}
-            <button
-              onClick={() => handleToggleFeature('self_checkout', selfCheckoutEnabled)}
-              disabled={isSavingSelfCheckout}
-              className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-                selfCheckoutEnabled 
-                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-                  : 'bg-gray-50 text-gray-500 border border-gray-200'
-              }`}
-              title="Toggle Self Checkout"
-            >
-              {selfCheckoutEnabled ? <FaToggleOn className="text-emerald-600" /> : <FaToggleOff className="text-gray-400" />}
-              <span>Self Out</span>
-            </button>
+          <button
+            onClick={() => handleToggleFeature('self_registration', selfRegEnabled)}
+            disabled={isSavingSelfReg}
+            className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
+              selfRegEnabled
+                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                : 'bg-gray-50 text-gray-500 border border-gray-200'
+            }`}
+            title="Toggle Self Registration"
+          >
+            {selfRegEnabled ? <FaToggleOn className="text-emerald-600" /> : <FaToggleOff className="text-gray-400" />}
+            <span>Self Reg</span>
+          </button>
+
+          <button
+            onClick={() => handleToggleFeature('self_checkout', selfCheckoutEnabled)}
+            disabled={isSavingSelfCheckout}
+            className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
+              selfCheckoutEnabled
+                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                : 'bg-gray-50 text-gray-500 border border-gray-200'
+            }`}
+            title="Toggle Self Checkout"
+          >
+            {selfCheckoutEnabled ? <FaToggleOn className="text-emerald-600" /> : <FaToggleOff className="text-gray-400" />}
+            <span>Self Out</span>
+          </button>
         </div>
       </div>
 
-
-      {/* Main Content */}
       <div className="p-4">
-        {/* Three Column Grid */}
         <div className="grid grid-cols-3 gap-4 bg-white rounded-lg shadow-sm p-4 mb-4">
-
-          {/* Col 1: Form Fields */}
           <div className="space-y-3">
+
             <div className="flex items-center gap-3">
               <label className="w-24 text-sm text-gray-600 text-right shrink-0">Names</label>
               <input
@@ -585,6 +560,7 @@ if (equipmentList.length === 0) {
                 className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-black"
               />
             </div>
+
             <div className="flex items-center gap-3">
               <label className="w-24 text-sm text-gray-600 text-right shrink-0">Id No</label>
               <input
@@ -594,6 +570,18 @@ if (equipmentList.length === 0) {
                 className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-black"
               />
             </div>
+
+            <div className="flex items-center gap-3">
+              <label className="w-24 text-sm text-gray-600 text-right shrink-0">Email</label>
+              <input
+                type="email"
+                value={visitorForm.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                placeholder="Optional email"
+                className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-black"
+              />
+            </div>
+
             <div className="flex items-center gap-3">
               <label className="w-24 text-sm text-gray-600 text-right shrink-0">Department</label>
               <div className="flex-1 relative">
@@ -614,6 +602,7 @@ if (equipmentList.length === 0) {
                 </div>
               </div>
             </div>
+
             <div className="flex items-center gap-3">
               <label className="w-24 text-sm text-gray-600 text-right shrink-0">Status</label>
               <div className="flex-1 relative">
@@ -634,6 +623,7 @@ if (equipmentList.length === 0) {
                 </div>
               </div>
             </div>
+
             <div className="flex items-center gap-3">
               <label className="w-24 text-sm text-gray-600 text-right shrink-0">Doc Type</label>
               <input
@@ -643,6 +633,7 @@ if (equipmentList.length === 0) {
                 className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500 text-black"
               />
             </div>
+
             <div className="flex items-center gap-3">
               <label className="w-24 text-sm text-gray-600 text-right shrink-0">Phone No</label>
               <div className="flex gap-2 flex-1">
@@ -704,7 +695,6 @@ if (equipmentList.length === 0) {
               </div>
             )}
 
-            {/* Action Buttons */}
             <div className="flex gap-2 pt-2 justify-center">
               <button
                 onClick={handleSubmit}
@@ -788,13 +778,14 @@ if (equipmentList.length === 0) {
             <div className="border-2 border-gray-300 rounded bg-gray-50 h-28 flex items-center justify-center w-full">
               {selectedMode === 'face' ? (
                 <div className="w-full px-2">
-<FaceVerify
+                  <FaceVerify
                     department={visitorForm.department}
                     autoCapture={true}
                     detectionIntervalMs={300}
                     onCapturedCheckIn={handleFaceMatchedCheckIn}
                   />
                 </div>
+
               ) : (
                 <span className="text-gray-400 text-sm">Card Scan Preview</span>
               )}
@@ -826,9 +817,10 @@ if (equipmentList.length === 0) {
             <button className="px-4 py-1.5 bg-white border border-gray-300 text-sm text-gray-700 rounded">
               Recent Taps
             </button>
-                <div className="flex items-center gap-2">
-                  {/* reference for TS no-unused-vars */}
-                  <span className="hidden">{String(isLoadingTaps)}{String(!!tapsError)}</span>
+
+            <div className="flex items-center gap-2">
+              {/* reference for TS no-unused-vars */}
+              <span className="hidden">{String(isLoadingTaps)}{String(!!tapsError)}</span>
 
               <div className="relative z-50">
                 {/* Voice Recording Indicator */}
@@ -943,3 +935,4 @@ if (equipmentList.length === 0) {
 }
 
 export default ScanningPage
+
