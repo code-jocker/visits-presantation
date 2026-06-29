@@ -5,7 +5,8 @@ services:
     plan: free
     rootDir: attendance-backend-main
     buildCommand: npm install && npm run build
-    startCommand: npm run start
+    startCommand: npm run migrate:visitors && npm run start
+
     healthCheckPath: /
     envVars:
       - key: NODE_ENV
