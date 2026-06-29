@@ -14,6 +14,7 @@ import Visitor from "./visitor";
 import SystemFeature from "./systemFeature";
 import Notification from "./notification";
 import Report from "./report";
+import PreRegistration from "./preRegistration";
 
 // Centralized associations  of all models for easy import in other parts of the application
 User.belongsToMany(Role,{

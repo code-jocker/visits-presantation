@@ -17,22 +17,12 @@ function Dashboard() {
   const [businessActivity, setBusinessActivity] = useState<any[]>([])
   const [recentCustomers, setRecentCustomers] = useState<any[]>([])
 
-  // Determine role
-  const roleType = currentUser?.roleType
-  const isOwner = roleType === 'owner'
-
   // IMPORTANT: never return early based on role BEFORE all hooks are declared.
   // We'll keep rendering logic stable and only short-circuit UI.
   const shouldRenderDashboard = !isLoadingUser && !!currentUser
 
   // Fetch dashboard data
   useEffect(() => {
-    if (!isOwner) {
-      setLoading(false)
-      return
-    }
-
-
     const fetchDashboardData = async () => {
       try {
         setLoading(true)
@@ -109,7 +99,7 @@ function Dashboard() {
     }
 
     fetchDashboardData()
-  }, [isOwner])
+  }, [])
 
   return (
     <div className="flex flex-col h-full">

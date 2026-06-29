@@ -393,9 +393,16 @@ const setupSystem = async () => {
 
         // Create default system owner user
         console.log('🔄 Creating default system owner user...');
-        const ownerEmail = 'santech@gmail.com';
-        const ownerPassword = 'Santech@2026';
-        const phoneNumber = '1234567890';
+        const ownerEmail = process.env.SYSTEM_OWNER_EMAIL || 'santech@gmail.com';
+        const ownerPassword = process.env.SYSTEM_OWNER_PASSWORD || 'Santech@2026';
+        const phoneNumber = process.env.SYSTEM_OWNER_PHONE || '1234567890';
+
+        if (!process.env.SYSTEM_OWNER_EMAIL) {
+            console.warn('⚠️  SYSTEM_OWNER_EMAIL not set — using fallback "santech@gmail.com". Set this env var in production.');
+        }
+        if (!process.env.SYSTEM_OWNER_PASSWORD) {
+            console.warn('⚠️  SYSTEM_OWNER_PASSWORD not set — using fallback "Santech@2026". Set this env var in production.');
+        }
 
         const ownerUser = await db.User.create({
             fullName: 'System Owner',
@@ -417,9 +424,16 @@ const setupSystem = async () => {
 
         // Create default admin user
         console.log('🔄 Creating default admin user...');
-        const adminEmail = 'admin@example.com';
-        const adminPassword = 'Admin@2026';
-        const adminPhoneNumber = '0987654321';
+        const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
+        const adminPassword = process.env.ADMIN_PASSWORD || 'Admin@2026';
+        const adminPhoneNumber = process.env.ADMIN_PHONE || '0987654321';
+
+        if (!process.env.ADMIN_EMAIL) {
+            console.warn('⚠️  ADMIN_EMAIL not set — using fallback "admin@example.com". Set this env var in production.');
+        }
+        if (!process.env.ADMIN_PASSWORD) {
+            console.warn('⚠️  ADMIN_PASSWORD not set — using fallback "Admin@2026". Set this env var in production.');
+        }
 
         const adminUser = await db.User.create({
             fullName: 'Admin User',
@@ -453,7 +467,11 @@ const setupSystem = async () => {
             { fullName: 'Protocols Officer', email: 'protocols@example.com', phoneNumber: '9999999999', role: 'protocals' }
         ];
 
-        const defaultPassword = 'Password@123';
+        const defaultPassword = process.env.SEED_USER_DEFAULT_PASSWORD || 'Password@123';
+
+        if (!process.env.SEED_USER_DEFAULT_PASSWORD) {
+            console.warn('⚠️  SEED_USER_DEFAULT_PASSWORD not set — using fallback "Password@123". Set this env var in production.');
+        }
 
         for (const seedUser of seedUsers) {
             try {

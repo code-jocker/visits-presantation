@@ -11,6 +11,30 @@ import cookieParser from "cookie-parser";
 
 dotenv.config();
 
+const validateEnv = () => {
+  const missing: string[] = [];
+
+  if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'your-secret-key') {
+    missing.push('JWT_SECRET (generate a strong random secret, e.g. openssl rand -base64 32)');
+  }
+
+  if (!process.env.DATABASE_URL && !process.env.DB_NAME) {
+    missing.push('DATABASE_URL (for Postgres) or DB_NAME (for MySQL)');
+  }
+
+  if (!process.env.FRONTEND_URL) {
+    missing.push('FRONTEND_URL');
+  }
+
+  if (missing.length > 0) {
+    console.error('Missing required environment variables:');
+    missing.forEach(v => console.error(`  - ${v}`));
+    throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+  }
+};
+
+validateEnv();
+
 const app = express();
 
 //Trach database connection status
