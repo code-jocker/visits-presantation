@@ -122,9 +122,28 @@ app.get("/",(req:Request,res:Response)=>{
 //Register TSOA-generated routes
 RegisterRoutes(app);
 
+// One-time schema sync guard in Render to fix hosted crashes due to missing columns.
+// Set FORCE_DB_SYNC=true to run sequelize.sync({ alter: true }) on startup.
+if (process.env.FORCE_DB_SYNC === 'true') {
+  (async () => {
+    try {
+      // eslint-disable-next-line no-console
+      console.log('[db-sync] FORCE_DB_SYNC enabled: running sequelize.sync({ alter: true })');
+      const sequelize = (await import('./config/database')).default;
+      await sequelize.sync({ alter: true });
+      // eslint-disable-next-line no-console
+      console.log('[db-sync] sequelize.sync completed');
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('[db-sync] sequelize.sync failed:', e);
+    }
+  })();
+}
+
 const [notFoundHandler, errorHandler,errorLogger] = errorHandlerMiddleware();
 app.use(notFoundHandler);
 app.use(errorLogger);
 app.use(errorHandler);
 
 export default app;
+
