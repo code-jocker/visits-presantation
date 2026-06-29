@@ -17,49 +17,32 @@ export interface PreRegistrationCreateRequest {
     appointmentTime?: string;
     timeDuration?: string;
     appointmentLocation?: string;
-    idProofType?: string;
-    idNumber?: string;
     profilePhoto?: string;
 }
 
 export interface PreRegistrationResponse {
     id: string;
-    preRegistrationId: string;
-    fullName: string;
-    mobile?: string;
-    email?: string;
+    visitorName: string;
+    visitorPhone?: string;
+    visitorEmail?: string;
     visitorCompany?: string;
-    purpose?: string;
+    purpose: string;
     department?: string;
-    hostName?: string;
-    appointmentDate?: string;
-    appointmentTime?: string;
+    hostName: string;
+    appointmentDate: string;
+    appointmentTime: string;
     timeDuration?: string;
     appointmentLocation?: string;
     status: string;
-    profilePhoto?: string;
-    qrCode?: string;
-    expiresAt?: string;
+    visitorPhoto?: string;
     approvedAt?: string;
     approvedBy?: string;
+    deniedAt?: string;
+    deniedBy?: string;
+    denialReason?: string;
     createdAt: string;
 }
 
-function generatePreRegistrationId(): string {
-    const timestamp = Date.now().toString().slice(-8);
-    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `PR-${timestamp}-${random}`;
-}
-
-function generateQRCode(preRegistrationId: string, fullName: string): string {
-    const payload = {
-        type: 'pre-registration',
-        id: preRegistrationId,
-        name: fullName,
-        timestamp: Date.now(),
-    };
-    return btoa(JSON.stringify(payload));
-}
 
 @Route("api/pre-registrations")
 @Tags("PreRegistrations")
@@ -83,7 +66,31 @@ export class PreRegistrationController {
             limit: limit || 100,
         });
 
-        return ServiceResponse.success("Pre-registrations retrieved successfully", preRegs.map(pr => pr.toJSON()));
+        return ServiceResponse.success(
+            "Pre-registrations retrieved successfully",
+            preRegs.map((pr: any) => ({
+                id: pr.id,
+                visitorName: pr.visitorName,
+                visitorPhone: pr.visitorPhone,
+                visitorEmail: pr.visitorEmail,
+                visitorCompany: pr.visitorCompany,
+                purpose: pr.purpose,
+                department: pr.department,
+                hostName: pr.hostName,
+                appointmentDate: pr.appointmentDate,
+                appointmentTime: pr.appointmentTime,
+                timeDuration: pr.timeDuration,
+                appointmentLocation: pr.appointmentLocation,
+                status: pr.status,
+                visitorPhoto: pr.visitorPhoto,
+                approvedAt: pr.approvedAt ? String(pr.approvedAt) : undefined,
+                approvedBy: pr.approvedBy,
+                deniedAt: pr.deniedAt ? String(pr.deniedAt) : undefined,
+                deniedBy: pr.deniedBy,
+                denialReason: pr.denialReason,
+                createdAt: pr.createdAt ? String(pr.createdAt) : String(pr.id),
+            })) as any
+        );
     }
 
     @Post("/")
@@ -99,16 +106,46 @@ export class PreRegistrationController {
             return;
         }
 
-        const preRegistrationId = generatePreRegistrationId();
-        const qrCode = generateQRCode(preRegistrationId, request.fullName);
-        const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
+        if (!request.purpose?.trim()) {
+            res(400, ServiceResponse.failure("Purpose is required", null, 400));
+            return;
+        }
+
+        if (!request.hostName?.trim()) {
+            res(400, ServiceResponse.failure("Host name is required", null, 400));
+            return;
+        }
+
+        if (!request.department?.trim()) {
+            res(400, ServiceResponse.failure("Department is required", null, 400));
+            return;
+        }
+
+        if (!request.appointmentDate?.trim()) {
+            res(400, ServiceResponse.failure("Appointment date is required", null, 400));
+            return;
+        }
+
+        if (!request.appointmentTime?.trim()) {
+            res(400, ServiceResponse.failure("Appointment time is required", null, 400));
+            return;
+        }
 
         const preReg = await PreRegistration.create({
-            ...request,
-            preRegistrationId,
-            qrCode,
-            expiresAt,
+            visitorName: request.fullName,
+            visitorPhone: request.mobile,
+            visitorEmail: request.email,
+            visitorCompany: request.visitorCompany,
+            purpose: request.purpose,
+            department: request.department,
+            hostName: request.hostName,
+            appointmentDate: request.appointmentDate,
+            appointmentTime: request.appointmentTime,
+            timeDuration: request.timeDuration,
+            appointmentLocation: request.appointmentLocation,
+            visitorPhoto: request.profilePhoto,
             status: 'pending',
+            createdBy: (res as any).locals?.user?.id ?? undefined,
         } as any);
 
         res(201, ServiceResponse.success("Pre-registration created successfully", preReg.toJSON() as any, 201));
@@ -126,34 +163,58 @@ export class PreRegistrationController {
             return;
         }
 
+        if (!request.purpose?.trim()) {
+            res(400, ServiceResponse.failure("Purpose is required", null, 400));
+            return;
+        }
+
         if (!request.hostName?.trim()) {
             res(400, ServiceResponse.failure("Host name is required", null, 400));
             return;
         }
 
-        const preRegistrationId = generatePreRegistrationId();
-        const qrCode = generateQRCode(preRegistrationId, request.fullName);
-        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
+        if (!request.department?.trim()) {
+            res(400, ServiceResponse.failure("Department is required", null, 400));
+            return;
+        }
+
+        if (!request.appointmentDate?.trim()) {
+            res(400, ServiceResponse.failure("Appointment date is required", null, 400));
+            return;
+        }
+
+        if (!request.appointmentTime?.trim()) {
+            res(400, ServiceResponse.failure("Appointment time is required", null, 400));
+            return;
+        }
 
         const preReg = await PreRegistration.create({
-            ...request,
-            preRegistrationId,
-            qrCode,
-            expiresAt,
+            visitorName: request.fullName,
+            visitorPhone: request.mobile,
+            visitorEmail: request.email,
+            visitorCompany: request.visitorCompany,
+            purpose: request.purpose,
+            department: request.department,
+            hostName: request.hostName,
+            appointmentDate: request.appointmentDate,
+            appointmentTime: request.appointmentTime,
+            timeDuration: request.timeDuration,
+            appointmentLocation: request.appointmentLocation,
+            visitorPhoto: request.profilePhoto,
             status: 'pending',
         } as any);
 
-        // Notify host about pre-registration request
-        const hostUser = await db.User.findOne({ where: { fullName: request.hostName } });
+        // Notify host about pre-registration request (use only allowed Notification.type/relatedType)
+        const hostUser = await db.User.findOne({ where: { id: request.hostName } });
         if (hostUser) {
             await db.Notification.create({
                 recipientId: hostUser.id,
                 recipientType: 'user',
                 title: 'Pre-Registration Request',
                 message: `${request.fullName} has requested a visit${request.department ? ` to ${request.department}` : ''}${request.appointmentDate ? ` on ${request.appointmentDate}` : ''}. Please approve or deny.`,
-                type: 'preregistration_request',
+                type: 'general',
                 relatedId: String(preReg.id),
-                relatedType: 'pre_registration',
+                relatedType: 'visitor',
             });
         }
 
@@ -177,19 +238,35 @@ export class PreRegistrationController {
     @asyncCatch
     public async validate(@Path() preRegistrationId: string): Promise<ServiceResponse<PreRegistrationResponse | null>> {
         const preReg = await PreRegistration.findOne({
-            where: { preRegistrationId },
+            where: { id: preRegistrationId },
         });
 
         if (!preReg) {
             return ServiceResponse.failure("Invalid pre-registration ID", null, 404);
         }
 
-        // Check expiration
-        if (preReg.expiresAt && new Date(preReg.expiresAt) < new Date()) {
-            return ServiceResponse.failure("Pre-registration has expired", null, 400);
-        }
-
-        return ServiceResponse.success("Pre-registration validated", preReg.toJSON() as any);
+        return ServiceResponse.success("Pre-registration validated", {
+            id: preReg.id,
+            visitorName: preReg.visitorName,
+            visitorPhone: preReg.visitorPhone,
+            visitorEmail: preReg.visitorEmail,
+            visitorCompany: preReg.visitorCompany,
+            purpose: preReg.purpose,
+            department: preReg.department,
+            hostName: preReg.hostName,
+            appointmentDate: preReg.appointmentDate,
+            appointmentTime: preReg.appointmentTime,
+            timeDuration: preReg.timeDuration,
+            appointmentLocation: preReg.appointmentLocation,
+            status: preReg.status,
+            visitorPhoto: preReg.visitorPhoto,
+            approvedAt: preReg.approvedAt ? String(preReg.approvedAt) : undefined,
+            approvedBy: preReg.approvedBy,
+            deniedAt: preReg.deniedAt ? String(preReg.deniedAt) : undefined,
+            deniedBy: preReg.deniedBy,
+            denialReason: preReg.denialReason,
+            createdAt: preReg.createdAt ? String(preReg.createdAt) : String(preReg.id),
+        } as any);
     }
 
     @Put("/:id/approve")
@@ -209,25 +286,43 @@ export class PreRegistrationController {
             status: 'approved',
             approvedAt: new Date(),
             approvedBy: body.approvedBy,
-            hostResponse: 'approved',
         });
 
-        // Notify visitor (if email/mobile exists)
-        // This would trigger an email/SMS with the QR code or calendar invite
-        const visitor = await db.Visitor.findOne({ where: { mobile: preReg.mobile } });
-        if (visitor) {
+        // Notify visitor
+        if (preReg.visitorPhone || preReg.visitorEmail) {
             await db.Notification.create({
-                recipientId: preReg.mobile || '',
-                recipientType: 'visitor',
-                title: 'Visit Approved',
-                message: `Your visit request has been approved. Pre-registration ID: ${preReg.preRegistrationId}`,
-                type: 'visit_approved',
+                recipientId: preReg.createdBy,
+                recipientType: 'user',
+                title: 'Pre-registration approved',
+                message: `Your pre-registration has been approved. ID: ${preReg.id}`,
+                type: 'appointment_confirmed',
                 relatedId: String(preReg.id),
-                relatedType: 'pre_registration',
+                relatedType: 'appointment',
             });
         }
 
-        return ServiceResponse.success("Pre-registration approved", preReg.toJSON() as any);
+        return ServiceResponse.success("Pre-registration approved", {
+            id: preReg.id,
+            visitorName: preReg.visitorName,
+            visitorPhone: preReg.visitorPhone,
+            visitorEmail: preReg.visitorEmail,
+            visitorCompany: preReg.visitorCompany,
+            purpose: preReg.purpose,
+            department: preReg.department,
+            hostName: preReg.hostName,
+            appointmentDate: preReg.appointmentDate,
+            appointmentTime: preReg.appointmentTime,
+            timeDuration: preReg.timeDuration,
+            appointmentLocation: preReg.appointmentLocation,
+            status: preReg.status,
+            visitorPhoto: preReg.visitorPhoto,
+            approvedAt: preReg.approvedAt ? String(preReg.approvedAt) : undefined,
+            approvedBy: preReg.approvedBy,
+            deniedAt: preReg.deniedAt ? String(preReg.deniedAt) : undefined,
+            deniedBy: preReg.deniedBy,
+            denialReason: preReg.denialReason,
+            createdAt: preReg.createdAt ? String(preReg.createdAt) : String(preReg.id),
+        } as any);
     }
 
     @Put("/:id/deny")
@@ -244,13 +339,34 @@ export class PreRegistrationController {
         }
 
         await preReg.update({
-            status: 'rejected',
-            rejectionReason: body.rejectionReason,
-            approvedBy: body.rejectedBy,
-            hostResponse: 'denied',
+            status: 'denied',
+            denialReason: body.rejectionReason,
+            deniedBy: body.rejectedBy,
+            deniedAt: new Date(),
         });
 
-        return ServiceResponse.success("Pre-registration denied", preReg.toJSON() as any);
+        return ServiceResponse.success("Pre-registration denied", {
+            id: preReg.id,
+            visitorName: preReg.visitorName,
+            visitorPhone: preReg.visitorPhone,
+            visitorEmail: preReg.visitorEmail,
+            visitorCompany: preReg.visitorCompany,
+            purpose: preReg.purpose,
+            department: preReg.department,
+            hostName: preReg.hostName,
+            appointmentDate: preReg.appointmentDate,
+            appointmentTime: preReg.appointmentTime,
+            timeDuration: preReg.timeDuration,
+            appointmentLocation: preReg.appointmentLocation,
+            status: preReg.status,
+            visitorPhoto: preReg.visitorPhoto,
+            approvedAt: preReg.approvedAt ? String(preReg.approvedAt) : undefined,
+            approvedBy: preReg.approvedBy,
+            deniedAt: preReg.deniedAt ? String(preReg.deniedAt) : undefined,
+            deniedBy: preReg.deniedBy,
+            denialReason: preReg.denialReason,
+            createdAt: preReg.createdAt ? String(preReg.createdAt) : String(preReg.id),
+        } as any);
     }
 
     @Delete("/:id")

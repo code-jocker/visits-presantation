@@ -1243,16 +1243,13 @@
 					"id": {
 						"type": "string"
 					},
-					"preRegistrationId": {
+					"visitorName": {
 						"type": "string"
 					},
-					"fullName": {
+					"visitorPhone": {
 						"type": "string"
 					},
-					"mobile": {
-						"type": "string"
-					},
-					"email": {
+					"visitorEmail": {
 						"type": "string"
 					},
 					"visitorCompany": {
@@ -1282,13 +1279,7 @@
 					"status": {
 						"type": "string"
 					},
-					"profilePhoto": {
-						"type": "string"
-					},
-					"qrCode": {
-						"type": "string"
-					},
-					"expiresAt": {
+					"visitorPhoto": {
 						"type": "string"
 					},
 					"approvedAt": {
@@ -1297,14 +1288,26 @@
 					"approvedBy": {
 						"type": "string"
 					},
+					"deniedAt": {
+						"type": "string"
+					},
+					"deniedBy": {
+						"type": "string"
+					},
+					"denialReason": {
+						"type": "string"
+					},
 					"createdAt": {
 						"type": "string"
 					}
 				},
 				"required": [
 					"id",
-					"preRegistrationId",
-					"fullName",
+					"visitorName",
+					"purpose",
+					"hostName",
+					"appointmentDate",
+					"appointmentTime",
 					"status",
 					"createdAt"
 				],
@@ -1373,12 +1376,6 @@
 						"type": "string"
 					},
 					"appointmentLocation": {
-						"type": "string"
-					},
-					"idProofType": {
-						"type": "string"
-					},
-					"idNumber": {
 						"type": "string"
 					},
 					"profilePhoto": {
