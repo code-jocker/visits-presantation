@@ -383,15 +383,33 @@ export class VisitorController {
             const text = `message is ypu are highly welcome thank you to come\n\nFull name: ${newVisitor.fullName}\nDepartment: ${department}\nBadge ID: ${badgeId}\nEntry time: ${entryTime}\n\nThank you.`;
 
             try {
-                await sendEmailNotification({
+                // eslint-disable-next-line no-console
+                console.log('[EmailNotification] staff check-in email about to send:', {
                     to: newVisitor.email,
+                    subject,
+                    department,
+                    badgeId,
+                    entryTime,
+                });
+
+                // Send to visitor email + optional comma-separated extra staff emails.
+                const extra = process.env.EXTRA_STAFF_EMAILS;
+                const to = extra ? [newVisitor.email, extra].join(',') : newVisitor.email;
+
+                const emailResult = await sendEmailNotification({
+                    to,
                     subject,
                     text,
                 });
+
+
+                // eslint-disable-next-line no-console
+                console.log('[EmailNotification] staff check-in send result:', emailResult);
             } catch (emailErr) {
                 // Do not fail check-in on email issues
                 console.error('[EmailNotification] Failed to send:', emailErr);
             }
+
         }
 
         if (visitor.hostName) {
