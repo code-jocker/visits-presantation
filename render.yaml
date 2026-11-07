@@ -1,0 +1,52 @@
+services:
+  - type: web
+    name: e-visitors-backend
+    env: node
+    region: oregon
+    branch: master
+    rootDir: attendance-backend-main
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_NAME
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SEED_ON_START
+        value: "true"
+      - key: VITE_APP_URL
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: HOST
+        value: 0.0.0.0
+      - key: COOKIE_DOMAIN
+        sync: false
+    disk: {}
+
+  - type: web
+    name: e-visitors-frontend
+    env: node
+    region: oregon
+    branch: master
+    rootDir: E-visitors-main
+    buildCommand: npm install && npm run build
+    startCommand: npx serve dist -l $PORT
+    envVars:
+      - key: VITE_API_URL
+        sync: false
+      - key: VITE_APP_URL
+        sync: false
