@@ -2,22 +2,29 @@ import { Sequelize, QueryTypes } from "sequelize";
 import dotenv from "dotenv";
 dotenv.config();
 
-const sequelize = new Sequelize(
-  process.env.DATABASE_URL ||
-  `${process.env.DB_NAME || "defaultdb"}`,
-  process.env.DB_USER || "avnadmin",
-  process.env.DB_PASSWORD || "",
-  {
-    host: process.env.DB_HOST || "pg-d3e0b7b-princeshyakaclever-6fa6.a.aivencloud.com",
-    port: Number(process.env.DB_PORT || "13480"),
-    dialect: "postgres",
-    logging: false,
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
+const databaseUrl = process.env.DATABASE_URL;
+
+const sequelizeOptions = {
+  host: process.env.DB_HOST || "pg-d3e0b7b-princeshyakaclever-6fa6.a.aivencloud.com",
+  port: Number(process.env.DB_PORT || "13480"),
+  dialect: "postgres" as const,
+  logging: false,
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
     },
+  },
+};
+
+const sequelize = databaseUrl
+  ? new Sequelize(databaseUrl, sequelizeOptions)
+  : new Sequelize(
+      process.env.DB_NAME || "defaultdb",
+      process.env.DB_USER || "avnadmin",
+      process.env.DB_PASSWORD || "",
+      sequelizeOptions,
+    );
   },
 );
 
