@@ -5,8 +5,8 @@ services:
     region: oregon
     branch: master
     rootDir: attendance-backend-main
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    buildCommand: npm install && npx tsoa routes && npx tsoa spec
+    startCommand: npx tsx index.ts
     healthCheckPath: /
     envVars:
       - key: NODE_ENV
