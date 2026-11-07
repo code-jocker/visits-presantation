@@ -10,9 +10,11 @@ const requiredDatabaseSetting = (name: string): string => {
   return value;
 };
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const config: Config = {
   jwt: {
-    secret: process.env.JWT_SECRET || 'your-secret-key', // Change this to a secure secret in production
+    secret: process.env.JWT_SECRET || 'your-secret-key',
     expiresIn: '1d',
   },
   google: {
@@ -22,15 +24,23 @@ const config: Config = {
   },
   database: {
     host: process.env.DB_HOST || "localhost",
-    port: Number(process.env.DB_PORT || "3306"),
-    user: process.env.DB_USER || "root",
+    port: Number(process.env.DB_PORT || "5432"),
+    user: process.env.DB_USER || "postgres",
     password: process.env.DB_PASSWORD || "",
-    databaseName: process.env.DB_NAME || "",
-    dialect: "mysql",
+    databaseName: process.env.DB_NAME || "defaultdb",
+    dialect: "postgres",
     logging: false,
+    dialectOptions: isProduction
+      ? {
+          ssl: {
+            require: true,
+            rejectUnauthorized: false,
+          },
+        }
+      : {},
   },
 
-  bcryptSalRounds: 10, // Number of salt rounds for bcrypt hashing
+  bcryptSalRounds: 10,
   nodeEnv: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '3000', 10),
   frontendUrl: process.env.VITE_APP_URL || 'http://localhost:3000',

@@ -13,11 +13,12 @@ export interface Config{
     database:{
         host:string,
         port:number,
-        dialect:"mysql",
+        dialect:"mysql"|"postgres",
         logging:boolean,
         databaseName:string,
         user:string,
-        password:string
+        password:string,
+        dialectOptions?: Record<string, unknown>,
     },
     bcryptSalRounds:number;
     nodeEnv:string;

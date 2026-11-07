@@ -1,23 +1,24 @@
 import config from "./config/config";
 import app from "./server";
 
-const server=app.listen(config.port, "localhost", () => {
+const host = config.host || "0.0.0.0";
+const port = config.port;
 
-    const {nodeEnv, port} = config;
-    console.log(`Server running in ${nodeEnv} mode on port http://localhost:${port}`);
+const server = app.listen(port, host, () => {
+    const { nodeEnv } = config;
+    console.log(`Server running in ${nodeEnv} mode on port http://${host}:${port}`);
 });
 
-
-const onCloseSignal=()=>{
+const onCloseSignal = () => {
     console.log("Received shutdown signal, closing server...");
-    server.close(()=>{
+    server.close(() => {
         console.log("Server closed gracefully.");
         process.exit(0);
     });
-    setTimeout(()=>{
+    setTimeout(() => {
         console.log("Forcefully shutting down server.");
         process.exit(1);
     }, 5000).unref();
 };
-process.on("SIGINT",onCloseSignal);
-process.on("SIGTERM",onCloseSignal);
+process.on("SIGINT", onCloseSignal);
+process.on("SIGTERM", onCloseSignal);

@@ -1,16 +1,23 @@
-import { Sequelize } from "sequelize";
+import { Sequelize, QueryTypes } from "sequelize";
 import dotenv from "dotenv";
 dotenv.config();
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME || "evisitors",
-  process.env.DB_USER || "root",
+  process.env.DATABASE_URL ||
+  `${process.env.DB_NAME || "defaultdb"}`,
+  process.env.DB_USER || "avnadmin",
   process.env.DB_PASSWORD || "",
   {
-    host: process.env.DB_HOST || "localhost",
-    port: Number(process.env.DB_PORT || "3307"),
-    dialect: "mysql",
+    host: process.env.DB_HOST || "pg-d3e0b7b-princeshyakaclever-6fa6.a.aivencloud.com",
+    port: Number(process.env.DB_PORT || "13480"),
+    dialect: "postgres",
     logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
   },
 );
 
@@ -70,7 +77,7 @@ const classStudentMap: Record<string, string[]> = {
 
 async function run() {
   await sequelize.authenticate();
-  console.log("✅ Connected to MySQL database");
+  console.log("✅ Connected to PostgreSQL database");
 
   const { default: Class } = await import("../models/class");
   const { default: Student } = await import("../models/student");
@@ -84,8 +91,8 @@ async function run() {
 
   for (const [className, students] of Object.entries(classStudentMap)) {
     let [existing] = await sequelize.query(
-      `SELECT id FROM classes WHERE name = :name LIMIT 1`,
-      { replacements: { name: className }, type: sequelize.QueryTypes.SELECT }
+      `SELECT id FROM classes WHERE name = $1 LIMIT 1`,
+      { bind: [className], type: QueryTypes.SELECT }
     );
     let classId: string;
     if (existing) {
@@ -102,8 +109,8 @@ async function run() {
       const trimmed = fullName.trim();
       if (!trimmed) continue;
       const [existingStudent] = await sequelize.query(
-        `SELECT id FROM students WHERE fullName = :fullName LIMIT 1`,
-        { replacements: { fullName: trimmed }, type: sequelize.QueryTypes.SELECT }
+        `SELECT id FROM students WHERE fullName = $1 LIMIT 1`,
+        { bind: [trimmed], type: QueryTypes.SELECT }
       );
       if (existingStudent) {
         skippedStudents++;
