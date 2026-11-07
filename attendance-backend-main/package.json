@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "build": "npx tsoa routes && npx tsoa spec && tsc",
+    "build": "npx tsoa routes && npx tsoa spec",
     "seed": "tsx ./scripts/seedMockData.ts",
-    "start": "node dist/index.mjs",
+    "start": "npx tsx index.ts",
     "dev": "npx tsoa routes && npx tsoa spec && tsx watch index.ts",
     "setup:system": "tsx ./config/system-setup.ts",
     "db:sync": "tsx ./scripts/db-sync.ts"
