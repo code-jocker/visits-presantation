@@ -35,7 +35,6 @@ services:
         value: 0.0.0.0
       - key: COOKIE_DOMAIN
         sync: false
-    disk: {}
 
   - type: web
     name: e-visitors-frontend
