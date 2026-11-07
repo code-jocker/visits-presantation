@@ -2,7 +2,7 @@ import { Sequelize, QueryTypes } from "sequelize";
 import dotenv from "dotenv";
 dotenv.config();
 
-const databaseUrl = process.env.DATABASE_URL;
+const databaseUrl = process.env.DATABASE_URL?.replace(/[?&]sslmode=\w+/, "");
 
 const sequelizeOptions = {
   host: process.env.DB_HOST || "pg-d3e0b7b-princeshyakaclever-6fa6.a.aivencloud.com",

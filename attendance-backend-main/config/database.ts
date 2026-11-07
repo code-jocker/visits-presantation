@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import config from "./config";
 dotenv.config();
 
-const databaseUrl = process.env.DATABASE_URL;
+const databaseUrl = process.env.DATABASE_URL?.replace(/[?&]sslmode=\w+/, "");
 
 const sequelizeOptions: any = {
   host: config.database.host,
