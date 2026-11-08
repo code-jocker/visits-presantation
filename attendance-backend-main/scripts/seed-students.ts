@@ -25,8 +25,6 @@ const sequelize = databaseUrl
       process.env.DB_PASSWORD || "",
       sequelizeOptions,
     );
-  },
-);
 
 const classStudentMap: Record<string, string[]> = {
   "S1A": [
@@ -98,7 +96,7 @@ async function run() {
 
   for (const [className, students] of Object.entries(classStudentMap)) {
     let [existing] = await sequelize.query(
-      `SELECT id FROM classes WHERE name = $1 LIMIT 1`,
+      `SELECT id FROM classes WHERE "name" = $1 LIMIT 1`,
       { bind: [className], type: QueryTypes.SELECT }
     );
     let classId: string;
@@ -116,7 +114,7 @@ async function run() {
       const trimmed = fullName.trim();
       if (!trimmed) continue;
       const [existingStudent] = await sequelize.query(
-        `SELECT id FROM students WHERE fullName = $1 LIMIT 1`,
+        `SELECT id FROM students WHERE "fullName" = $1 LIMIT 1`,
         { bind: [trimmed], type: QueryTypes.SELECT }
       );
       if (existingStudent) {
