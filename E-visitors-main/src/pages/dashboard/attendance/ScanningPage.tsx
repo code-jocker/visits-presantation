@@ -129,7 +129,6 @@ function ScanningPage() {
   const [studentSuggestions, setStudentSuggestions] = useState<StudentSearchResultItem[]>([])
   const [showStudentSuggestions, setShowStudentSuggestions] = useState(false)
   const [classes, setClasses] = useState<ClassItem[]>([])
-  const [isLoadingClasses, setIsLoadingClasses] = useState(false)
 
 
 
@@ -320,7 +319,7 @@ function ScanningPage() {
       ...prev,
       studentName: student.fullName,
       studentId: student.studentId,
-      classId: student.className ? '' : undefined,
+      classId: student.className ? '' : '',
     }))
     setStudentSuggestions([])
     setShowStudentSuggestions(false)

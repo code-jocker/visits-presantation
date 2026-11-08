@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FaPlus, FaSearch, FaEdit, FaTrash, FaSchool } from 'react-icons/fa'
+import { FaPlus, FaSearch, FaTrash, FaSchool } from 'react-icons/fa'
 import { classApi, type ClassItem, type ClassCreateRequest } from '../../../api/visitor'
 
 export default function ClassesPage() {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FaPlus, FaSearch, FaEdit, FaTrash, FaUserGraduate } from 'react-icons/fa'
+import { FaPlus, FaSearch, FaTrash, FaUserGraduate } from 'react-icons/fa'
 import { studentApi, classApi, type StudentItem, type StudentCreateRequest, type ClassItem } from '../../../api/visitor'
 
 export default function StudentsPage() {
@@ -79,7 +79,7 @@ export default function StudentsPage() {
     })
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
