@@ -34,24 +34,33 @@ initializeDatabase()
 
     // cross origins for security
 
-    const allowedOrigins = [process.env.FRONTEND_URL || "http://localhost:3000",
+    const allowedOrigins = [
+        process.env.FRONTEND_URL,
+        process.env.VITE_APP_URL,
         "https://backend.eac-se.com",
         "https://one.eac-se.com",
         "http://localhost:8080",
-        "http://localhost:5173"
-    ];
+        "http://localhost:5173",
+    ].filter(Boolean);
+
+    const isProduction = process.env.NODE_ENV === "production";
 
     app.use(cors({
         origin: function(origin, callback) {
-            if (!origin || allowedOrigins.includes(origin)) 
-                return callback(null, true);
+            // Allow requests with no origin (mobile apps, curl, etc.)
+            if (!origin) return callback(null, true);
 
-            if(allowedOrigins.indexOf(origin) === -1) {
-                const message = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
-               return callback(new Error(message),false);
-            } else {
+            // In production, dynamically reflect the request origin
+            if (isProduction) {
+                return callback(null, origin);
+            }
+
+            if (allowedOrigins.includes(origin)) {
                 return callback(null, true);
             }
+
+            const message = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
+            return callback(new Error(message), false);
         },
         credentials: true,
         allowedHeaders:["Content-Type","Authorization"],
