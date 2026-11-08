@@ -409,11 +409,24 @@ export class VisitorController extends Controller {
 
     const badgeId = badgeType === 'QR' ? `V-${Date.now().toString(36).toUpperCase()}` : visitor.badgeId;
 
+    let resolvedStudentId: string | null = null;
+    let resolvedClassId: string | null = null;
+
+    if (visitor.studentId) {
+      const student = await Student.findOne({ where: { studentId: visitor.studentId } });
+      if (student) resolvedStudentId = student.id;
+    }
+
+    if (visitor.classId) {
+      const cls = await Class.findOne({ where: { name: visitor.classId } });
+      if (cls) resolvedClassId = cls.id;
+    }
+
     const newVisitor = await Visitor.create({
       fullName: visitor.fullName,
       studentName: visitor.studentName.trim(),
-      studentId: visitor.studentId ?? null,
-      classId: visitor.classId ?? null,
+      studentId: resolvedStudentId,
+      classId: resolvedClassId,
       mobile: visitor.mobile,
       email: visitor.email,
       visitorCompany: visitor.visitorCompany,
@@ -473,11 +486,24 @@ export class VisitorController extends Controller {
 
     const badgeId = badgeType === 'QR' ? `V-${Date.now().toString(36).toUpperCase()}` : visitor.badgeId;
 
+    let resolvedStudentId: string | null = null;
+    let resolvedClassId: string | null = null;
+
+    if (visitor.studentId) {
+      const student = await Student.findOne({ where: { studentId: visitor.studentId } });
+      if (student) resolvedStudentId = student.id;
+    }
+
+    if (visitor.classId) {
+      const cls = await Class.findOne({ where: { name: visitor.classId } });
+      if (cls) resolvedClassId = cls.id;
+    }
+
     const newVisitor = await Visitor.create({
       fullName: visitor.fullName,
       studentName: visitor.studentName.trim(),
-      studentId: visitor.studentId ?? null,
-      classId: visitor.classId ?? null,
+      studentId: resolvedStudentId,
+      classId: resolvedClassId,
       mobile: visitor.mobile,
       email: visitor.email,
       visitorCompany: visitor.visitorCompany,

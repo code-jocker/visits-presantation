@@ -70,7 +70,7 @@ Visitor.init({
     allowNull: true,
   },
   studentId: {
-    type: DataTypes.STRING,
+    type: DataTypes.UUID,
     allowNull: true,
   },
   classId: {
