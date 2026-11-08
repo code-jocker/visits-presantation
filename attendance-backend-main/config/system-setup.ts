@@ -273,10 +273,6 @@ const setupSystem = async () => {
         await sequelize.authenticate();
         console.log('✅ Database connection established successfully.');
 
-        // Disable foreign key checks temporarily to allow dropping tables in any order
-        await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
-
-
         console.log('🔄 Dropping existing tables...');
 
         try {
@@ -321,9 +317,6 @@ const setupSystem = async () => {
         } catch (error) {
             console.log('ℹ️ permissions table did not exist or could not be dropped');
         }
-
-        // Re-enable foreign key checks
-        await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
 
         console.log('🔄 Creating database schema...');
         // Use force: true to ensure tables are recreated from scratch
