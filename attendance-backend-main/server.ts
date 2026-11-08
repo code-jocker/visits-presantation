@@ -41,6 +41,7 @@ initializeDatabase()
         "https://one.eac-se.com",
         "http://localhost:8080",
         "http://localhost:5173",
+        "http://localhost:5174",
     ].filter(Boolean);
 
     const isProduction = process.env.NODE_ENV === "production";

@@ -55,7 +55,7 @@ Student.init({
     allowNull: true,
   },
   classId: {
-    type: DataTypes.CHAR(36),
+    type: DataTypes.UUID,
     allowNull: true,
   },
   status: {
