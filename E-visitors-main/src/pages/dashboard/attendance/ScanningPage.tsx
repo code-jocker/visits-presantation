@@ -129,6 +129,7 @@ function ScanningPage() {
   const [studentSuggestions, setStudentSuggestions] = useState<StudentSearchResultItem[]>([])
   const [showStudentSuggestions, setShowStudentSuggestions] = useState(false)
   const [classes, setClasses] = useState<ClassItem[]>([])
+  const [_isLoadingClasses, setIsLoadingClasses] = useState(false)
 
 
 
