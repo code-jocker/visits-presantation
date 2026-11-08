@@ -21,12 +21,12 @@ const permissions = [
     { name: 'customer:delete', description: 'Delete a customer' },
     { name: 'customer:list', description: 'List all customers' },
 
-    //equipement permissions
-    { name: 'equipement:create', description: 'Create a new equipement' },
-    { name: 'equipement:read', description: 'Read equipement information' },
-    { name: 'equipement:update', description: 'Update equipement information' },
-    { name: 'equipement:delete', description: 'Delete a equipement' },
-    { name: 'equipement:list', description: 'List all equipements' },
+    //equipment permissions
+    { name: 'equipment:create', description: 'Create a new equipment' },
+    { name: 'equipment:read', description: 'Read equipment information' },
+    { name: 'equipment:update', description: 'Update equipment information' },
+    { name: 'equipment:delete', description: 'Delete a equipment' },
+    { name: 'equipment:list', description: 'List all equipments' },
 
     //security GiGate guard permissions
     { name: 'security_gate:create', description: 'Create a new security gate' },
@@ -70,12 +70,33 @@ const permissions = [
     { name: 'role:delete', description: 'Delete a role' },
     { name: 'role:list', description: 'List all roles' },
 
+    // permission management
+    { name: 'permission:create', description: 'Create a new permission' },
+    { name: 'permission:read', description: 'Read permission information' },
+    { name: 'permission:update', description: 'Update permission information' },
+    { name: 'permission:delete', description: 'Delete a permission' },
+    { name: 'permission:list', description: 'List all permissions' },
+
     // visitors management
     { name: 'visitor:create', description: 'Create a new visitor' },
     { name: 'visitor:read', description: 'Read visitor information' },
     { name: 'visitor:update', description: 'Update visitor information' },
     { name: 'visitor:delete', description: 'Delete a visitor' },
     { name: 'visitor:list', description: 'List all visitors' },
+
+    // class management
+    { name: 'class:create', description: 'Create a new class' },
+    { name: 'class:read', description: 'Read class information' },
+    { name: 'class:update', description: 'Update class information' },
+    { name: 'class:delete', description: 'Delete a class' },
+    { name: 'class:list', description: 'List all classes' },
+
+    // student management
+    { name: 'student:create', description: 'Create a new student' },
+    { name: 'student:read', description: 'Read student information' },
+    { name: 'student:update', description: 'Update student information' },
+    { name: 'student:delete', description: 'Delete a student' },
+    { name: 'student:list', description: 'List all students' },
 
     //reports management
     { name: 'report:create', description: 'Create a new report' },
@@ -152,6 +173,7 @@ const permissions = [
     { name: 'card:update', description: 'Update card information' },
     { name: 'card:delete', description: 'Delete a card' },
     { name: 'card:list', description: 'List all cards' },
+    { name: 'card:assign', description: 'Assign a card' },
 
     //smoke  permissions
     { name: 'smoke:read', description: 'Read smoke detection information' },
@@ -184,7 +206,7 @@ const roleTemplates = {
         name: 'help_desk',
         description: 'Help desk agent with limited permissions',
         permissions: [
-            'visitor:read', 'visitor:list', 'visitor:create', 'equipement:list', 'equipement:read', 'form:read', 'form:submit', 'report:read',
+            'visitor:read', 'visitor:list', 'visitor:create', 'equipment:list', 'equipment:read', 'form:read', 'form:submit', 'report:read',
             'report:list', 'event:read', 'event:list', 'attendance:read', 'attendance:list', 'announcement:read', 'announcement:list'
             , 'appointment:read', 'appointment:list', 'handover:read', 'handover:list', 'handover:create', 'handover:update', 'equipment:read', 'equipment:list'
         ]
@@ -194,14 +216,14 @@ const roleTemplates = {
         description: 'Check point agent with limited permissions',
         permissions: [
             'attendance:mark', 'attendance:read', 'attendance:list', 'visitor:read', 'visitor:list', 'visitor:create', 'event:read', 'event:list', 'announcement:read',
-            'announcement:list', 'appointment:read', 'appointment:list', 'handover:read', 'handover:list', 'handover:create', 'handover:update', 'equipement:read', 'equipement:list'
+            'announcement:list', 'appointment:read', 'appointment:list', 'handover:read', 'handover:list', 'handover:create', 'handover:update', 'equipment:read', 'equipment:list'
         ]
     },
     dataManager: {
         name: 'data_manager',
         description: 'Data manager with limited permissions',
         permissions: [
-            'user:read', 'user:list', 'user:create', 'user:update', 'equipement:read', 'equipement:list', 'form:read', 'form:list', 'form:create', 'form:update',
+            'user:read', 'user:list', 'user:create', 'user:update', 'equipment:read', 'equipment:list', 'form:read', 'form:list', 'form:create', 'form:update',
             'role:read', 'role:list', 'visitor:read', 'visitor:list', 'report:read', 'report:list', 'event:read', 'event:list', 'attendance:read',
             'attendance:list', 'announcement:read', 'announcement:list', 'appointment:read', 'appointment:list', 'handover:read', 'handover:list',
             'setting:read', 'setting:list', 'system_logs:read', 'system_logs:list', 'system_healthy:read', 'security:control'
@@ -213,7 +235,7 @@ const roleTemplates = {
         permissions: [
             'user:read', 'user:create', 'user:update', 'user:list', 'visitor:read', 'visitor:list', 'report:read', 'report:list', 'event:read', 'event:list', 'attendance:read',
             'attendance:list', 'announcement:read', 'announcement:list', 'appointment:read', 'appointment:list', 'handover:read', 'handover:list',
-            'equipement:read', 'equipement:list', 'form:read', 'form:create', 'form:list', 'form:submit', 'setting:read', 'setting:list', 'system_logs:read',
+            'equipment:read', 'equipment:list', 'form:read', 'form:create', 'form:list', 'form:submit', 'setting:read', 'setting:list', 'system_logs:read',
             'system_logs:list', 'system_healthy:read', 'security:control','security_gate:read', 'security_gate:list', 'security_gate:suspend', 'security_gate:update', 'security_gate:create', 'security_gate:delete'
         ]
     },
@@ -223,7 +245,7 @@ const roleTemplates = {
         permissions: [
             'visitor:read', 'visitor:list', 'report:read', 'report:list', 'event:read', 'event:list', 'attendance:read',
             'attendance:list', 'announcement:read', 'announcement:list', 'appointment:read', 'appointment:list', 'handover:read', 'handover:list',
-            'equipement:read', 'equipement:list', 'form:read', 'form:submit', 'setting:read', 'system_logs:read', 'system_logs:list',
+            'equipment:read', 'equipment:list', 'form:read', 'form:submit', 'setting:read', 'system_logs:read', 'system_logs:list',
             'system_healthy:read', 'security:control'
         ]
     },
@@ -233,7 +255,7 @@ const roleTemplates = {
         permissions: [
             'user:read', 'user:list', 'visitor:read', 'visitor:list', 'report:read', 'report:list', 'event:read', 'event:list', 'attendance:read',
             'attendance:list', 'announcement:read', 'announcement:list', 'appointment:read', 'appointment:list', 'handover:read', 'handover:list',
-            'equipement:read', 'equipement:list', 'form:read', 'form:list', 'setting:read', 'setting:list', 'system_logs:read', 'system_logs:list',
+            'equipment:read', 'equipment:list', 'form:read', 'form:list', 'setting:read', 'setting:list', 'system_logs:read', 'system_logs:list',
             'system_healthy:read', 'security:control'
         ]
     },
@@ -243,7 +265,7 @@ const roleTemplates = {
         permissions: [
             'user:read', 'user:list', 'user:create', 'user:update', 'visitor:read', 'visitor:list', 'report:read', 'report:list', 'event:read', 'event:list',
             'attendance:read', 'attendance:list', 'announcement:read', 'announcement:list', 'appointment:read', 'appointment:list', 'handover:read', 'handover:list',
-            'equipement:read', 'equipement:list', 'form:read', 'form:list', 'form:create', 'form:update', 'setting:read', 'setting:list', 'system_logs:read',
+            'equipment:read', 'equipment:list', 'form:read', 'form:list', 'form:create', 'form:update', 'setting:read', 'setting:list', 'system_logs:read',
             'system_logs:list', 'system_healthy:read', 'security:control'
         ]
     },
@@ -253,7 +275,7 @@ const roleTemplates = {
         permissions: [
             'visitor:read', 'visitor:list', 'report:read', 'report:list', 'event:read', 'event:list', 'attendance:read',
             'attendance:list', 'announcement:read', 'announcement:list', 'appointment:read', 'appointment:list', 'handover:read', 'handover:list',
-            'equipement:read', 'equipement:list', 'form:read', 'form:list', 'setting:read', 'setting:list', 'system_logs:read', 'system_logs:list',
+            'equipment:read', 'equipment:list', 'form:read', 'form:list', 'setting:read', 'setting:list', 'system_logs:read', 'system_logs:list',
             'system_healthy:read', 'security:control'
         ]
     }
