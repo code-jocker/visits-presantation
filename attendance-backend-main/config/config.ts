@@ -30,14 +30,12 @@ const config: Config = {
     databaseName: process.env.DB_NAME || "defaultdb",
     dialect: "postgres",
     logging: false,
-    dialectOptions: isProduction
-      ? {
-          ssl: {
-            require: true,
-            rejectUnauthorized: false,
-          },
-        }
-      : {},
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
   },
 
   bcryptSalRounds: 10,
